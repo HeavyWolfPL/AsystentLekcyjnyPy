@@ -17,6 +17,10 @@ with open("config.json", "r") as config:
     prefix = data["prefix"]
     token = data["token"]
 
+if token == "TOKEN":
+    print("Błędny token.")
+    exit
+
 class Greetings(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
