@@ -9,7 +9,7 @@ Bot łączący się z API aplikacji Wulkanowy uzyskując w ten sposób plan lekc
 - JSON Requests
 
 #### **Tokeny**
-Skopiuj plik token-example.json, wklej tam poprawne tokeny, a następnie zmień jego nazwę na `config.json`
+Skopiuj plik config-example.json, wklej tam poprawne tokeny, a następnie zmień jego nazwę na `config.json`
 
 #### **Komendy**
 ---
