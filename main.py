@@ -39,7 +39,7 @@ async def on_ready():
     print(f"""Zalogowano jako {bot.user}
 Discord.py - {discord.__version__}
 Bot by Wafelowski.dev""")
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.competing, name ="Projektach"))
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name ="lekcje"))
 
 
 @bot.event
