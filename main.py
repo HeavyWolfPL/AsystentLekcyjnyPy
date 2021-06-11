@@ -17,6 +17,10 @@ with open("config.json", "r") as config:
     prefix = data["prefix"]
     token = data["token"]
 
+if token == "TOKEN":
+    print("Błędny token.")
+    exit()
+
 class Greetings(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -53,6 +57,8 @@ async def on_message(message):
                 msg = await message.channel.send("🏓 Pong !")
                 ping = (time.monotonic() - before) * 1000
                 await msg.edit(content=f"🏓 Pong !  `{int(ping)} ms`")
+        if message.content.startswith("plan" or "planlekcji"):
+            await message.channel.send("Wczytuję plan [debug]")
         
 
 @bot.event
