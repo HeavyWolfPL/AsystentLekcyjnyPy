@@ -16,6 +16,11 @@ with open("config.json", "r") as config:
     data = json.load(config)
     prefix = data["prefix"]
     token = data["token"]
+    # Dziennik
+    dziennik_enabled = data["dziennik_enabled"]
+    dziennikToken = data["dziennikToken"]
+    dziennikSymbol = data["dziennikSymbol"]
+    dziennikPIN = data["dziennikPIN"]
 
 if token == "TOKEN":
     print("Błędny token.")
@@ -57,7 +62,11 @@ async def on_message(message):
                 msg = await message.channel.send("🏓 Pong !")
                 ping = (time.monotonic() - before) * 1000
                 await msg.edit(content=f"🏓 Pong !  `{int(ping)} ms`")
-        if message.content.startswith("plan" or "planlekcji"):
+        if message.content.startswith("!plan" or "!planlekcji"):
+            if dziennik_enabled == "true":
+                await message.channel.send("True")
+            else:
+                await message.channel.send("Moduł dziennika jest wyłączony.")
             await message.channel.send("Wczytuję plan [debug]")
         
 
