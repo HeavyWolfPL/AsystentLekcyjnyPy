@@ -10,6 +10,10 @@ import re
 import json
 import requests
 from urllib.parse import urlparse
+from vulcan import Account
+from vulcan import Keystore
+from vulcan import Vulcan
+
 
 # Get configuration.json
 with open("config.json", "r") as config: 
@@ -18,9 +22,13 @@ with open("config.json", "r") as config:
     token = data["token"]
     # Dziennik
     dziennik_enabled = data["dziennik_enabled"]
-    dziennikToken = data["dziennikToken"]
-    dziennikSymbol = data["dziennikSymbol"]
-    dziennikPIN = data["dziennikPIN"]
+    if dziennik_enabled:
+        dziennikToken = data["dziennikToken"]
+        dziennikSymbol = data["dziennikSymbol"]
+        dziennikPIN = data["dziennikPIN"]
+        keystoreDziennik = Keystore.create(device_model="Python Vulcan API")
+        dziennikAccount = Account.register(keystoreDziennik, dziennikToken, dziennikSymbol, dziennikPIN)
+        dziennikClient = Vulcan(keystoreDziennik, dziennikAccount)
 
 if token == "TOKEN":
     print("Błędny token.")
@@ -64,7 +72,9 @@ async def on_message(message):
                 await msg.edit(content=f"🏓 Pong !  `{int(ping)} ms`")
         if message.content.startswith("!plan" or "!planlekcji"):
             if dziennik_enabled == "true":
-                await message.channel.send("True")
+                await message.channel.send("True")  
+                luckynumber = dziennikClient.data.get_lucky_number()
+                print(luckynumber)              
             else:
                 await message.channel.send("Moduł dziennika jest wyłączony.")
             await message.channel.send("Wczytuję plan [debug]")
