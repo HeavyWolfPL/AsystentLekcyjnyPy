@@ -13,6 +13,7 @@ from urllib.parse import urlparse
 from vulcan import Account
 from vulcan import Keystore
 from vulcan import Vulcan
+import dziennik.luckynumber
 
 
 # Get configuration.json
@@ -25,10 +26,10 @@ with open("config.json", "r") as config:
     if dziennik_enabled:
         dziennikToken = data["dziennikToken"]
         dziennikSymbol = data["dziennikSymbol"]
-        dziennikPIN = data["dziennikPIN"]
-        keystoreDziennik = Keystore.create(device_model="Python Vulcan API")
-        dziennikAccount = Account.register(keystoreDziennik, dziennikToken, dziennikSymbol, dziennikPIN)
-        dziennikClient = Vulcan(keystoreDziennik, dziennikAccount)
+        dziennikPin = data["dziennikPIN"]
+        dziennikKeystore = Keystore.create(device_model="Python Vulcan API")
+        dziennikAccount = Account.register(dziennikKeystore, dziennikToken, dziennikSymbol, dziennikPin)
+        #dziennikClient = Vulcan(keystoreDziennik, dziennikAccount)
 
 if token == "TOKEN":
     print("Błędny token.")
@@ -62,7 +63,7 @@ Bot by Wafelowski.dev""")
 @bot.event
 async def on_message(message):
     if message.author.id != bot.user.id:
-        if message.content.startswith("!shutdown" or "!off" or "!zabij"):
+        if message.content.startswith("!shutdown"):
                 await message.channel.send("Okej")
                 exit()
         if message.content.startswith("!ping"):
@@ -73,12 +74,15 @@ async def on_message(message):
         if message.content.startswith("!plan" or "!planlekcji"):
             if dziennik_enabled == "true":
                 await message.channel.send("True")  
-                luckynumber = dziennikClient.data.get_lucky_number()
-                print(luckynumber)              
+                loop = asyncio.get_event_loop()
+                loop.run_until_complete(dziennik.luckynumber())
+                print(dziennik.luckynumber)
+                         
             else:
                 await message.channel.send("Moduł dziennika jest wyłączony.")
             await message.channel.send("Wczytuję plan [debug]")
-        
+
+
 
 @bot.event
 async def when_mentioned(bot, message):
