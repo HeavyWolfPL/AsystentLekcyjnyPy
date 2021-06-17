@@ -2,4 +2,4 @@ token.json
 config.json
 .vs/
 .vscode/
-.*/__pycache__/
+**/__pycache__/
