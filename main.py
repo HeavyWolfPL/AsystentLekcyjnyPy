@@ -13,7 +13,8 @@ from urllib.parse import urlparse
 from vulcan import Account
 from vulcan import Keystore
 from vulcan import Vulcan
-import dziennik.luckynumber
+from dziennik.luckynumber import get_luckynumber
+import nest_asyncio
 
 
 # Get configuration.json
@@ -63,7 +64,7 @@ Bot by Wafelowski.dev""")
 @bot.event
 async def on_message(message):
     if message.author.id != bot.user.id:
-        if message.content.startswith("!shutdown"):
+        if message.content.startswith("!off"):
                 await message.channel.send("Okej")
                 exit()
         if message.content.startswith("!ping"):
@@ -71,13 +72,16 @@ async def on_message(message):
                 msg = await message.channel.send("🏓 Pong !")
                 ping = (time.monotonic() - before) * 1000
                 await msg.edit(content=f"🏓 Pong !  `{int(ping)} ms`")
+        if message.content.startswith("!acc"):
+            dziennikAccount = Account.register(dziennikKeystore, dziennikToken, dziennikSymbol, dziennikPin)
+            message.channel.send("Account test")
         if message.content.startswith("!plan" or "!planlekcji"):
-            if dziennik_enabled == "true":
-                await message.channel.send("True")  
+            if dziennik_enabled:
+                await message.channel.send("True")
+                nest_asyncio.apply()  
                 loop = asyncio.get_event_loop()
-                loop.run_until_complete(dziennik.luckynumber())
-                print(dziennik.luckynumber)
-                         
+                loop.run_until_complete(get_luckynumber())
+                print(get_luckynumber)
             else:
                 await message.channel.send("Moduł dziennika jest wyłączony.")
             await message.channel.send("Wczytuję plan [debug]")
