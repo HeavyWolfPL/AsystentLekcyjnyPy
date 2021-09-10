@@ -1,5 +1,7 @@
 token.json
 config.json
+key-config.json
+acc-config.json
 .vs/
 .vscode/
 **/__pycache__/
