@@ -1,20 +1,11 @@
-import asyncio
-from asyncio.tasks import wait_for
-import discord
-from discord import channel
-from discord.ext import commands
-import json
-import time
 import os
-import re
+import discord
+import time
 import json
-import requests
-from urllib.parse import urlparse
 from vulcan import Account
 from vulcan import Keystore
 from vulcan import Vulcan
-from dziennik.luckynumber import get_luckynumber
-import nest_asyncio
+from discord.ext import commands
 
 
 # Get configuration.json
@@ -22,36 +13,41 @@ with open("config.json", "r") as config:
     data = json.load(config)
     prefix = data["prefix"]
     token = data["token"]
+    owner_id = data["ownerID"]
     # Dziennik
     dziennik_enabled = data["dziennik_enabled"]
     if dziennik_enabled:
         dziennikToken = data["dziennikToken"]
         dziennikSymbol = data["dziennikSymbol"]
         dziennikPin = data["dziennikPIN"]
-        dziennikKeystore = Keystore.create(device_model="Python Vulcan API")
-        dziennikAccount = Account.register(dziennikKeystore, dziennikToken, dziennikSymbol, dziennikPin)
-        #dziennikClient = Vulcan(keystoreDziennik, dziennikAccount)
 
 if token == "TOKEN":
     print("Błędny token.")
     exit()
 
-class Greetings(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-        self._last_member = None
+def __init__(self, bot):
+    self.bot = bot
+    self._last_member = None
 
 # Intents
 intents = discord.Intents.default()
 intents.members = True
 # The bot
-bot = commands.Bot(prefix, intents = intents)
+bot = commands.Bot(command_prefix='!', intents = intents)
 
-# Load cogs1
-#if __name__ == '__main__':
-#	for filename in os.listdir("Cogs"):
-#		if filename.endswith(".py"):
-#			bot.load_extension(f"Cogs.{filename[:-3]}")
+# Load cogs
+if __name__ == '__main__':
+    for filename in os.listdir("cogs"):
+        if filename.endswith(".py"):
+            bot.load_extension(f"cogs.{filename[:-3]}")
+            print(f"Loaded - {filename[:-3]}")
+        
+
+# cogss = bot.get_cog('PlanLekcji')
+# cmds = cogss.get_commands()
+# print([c.name for c in cmds])
+
+
 
 @bot.event
 async def on_ready():
@@ -61,7 +57,7 @@ Bot by Wafelowski.dev""")
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name ="lekcje"))
 
 
-@bot.event
+@bot.listen('on_message')
 async def on_message(message):
     if message.author.id != bot.user.id:
         if message.content.startswith("!off"):
@@ -72,21 +68,26 @@ async def on_message(message):
                 msg = await message.channel.send("🏓 Pong !")
                 ping = (time.monotonic() - before) * 1000
                 await msg.edit(content=f"🏓 Pong !  `{int(ping)} ms`")
-        if message.content.startswith("!acc"):
-            dziennikAccount = Account.register(dziennikKeystore, dziennikToken, dziennikSymbol, dziennikPin)
-            message.channel.send("Account test")
-        if message.content.startswith("!plan" or "!planlekcji"):
-            if dziennik_enabled:
-                await message.channel.send("True")
-                nest_asyncio.apply()  
-                loop = asyncio.get_event_loop()
-                loop.run_until_complete(get_luckynumber())
-                print(get_luckynumber)
-            else:
-                await message.channel.send("Moduł dziennika jest wyłączony.")
-            await message.channel.send("Wczytuję plan [debug]")
-
-
+        if message.content.startswith("!setup") and message.author.id == owner_id:
+            dziennikKeystore = Keystore.create(device_model="Python Vulcan API")
+            with open("key-config.json", "w") as f:
+                # use one of the options below:
+                # write a formatted JSON representation
+                f.write(dziennikKeystore.as_json)
+            dziennikAccount = await Account.register(dziennikKeystore, dziennikToken, dziennikSymbol, dziennikPin)
+            with open("acc-config.json", "w") as f:
+                # write a formatted JSON representation
+                f.write(dziennikAccount.as_json)
+            await message.channel.send("Account and Keystore created.")
+        # if dziennik_enabled:
+        #     #Frekwencja
+        #     if message.content.startswith("!frekwencja"):
+        #         await message.channel.send(f'Frekwencja: \n```\n{await get_frekwencja()}```')
+        #     #Szczęśliwy numerek
+        #     if message.content.startswith("!numerek" or "!szczęśliwynumerek" or "!szczesliwynumerek"):
+        #         await message.channel.send(f'Szczęśliwy numerek to `{await get_luckynumber()}`')
+        if not dziennik_enabled:
+            await message.channel.send("Moduł dziennika jest wyłączony.")
 
 @bot.event
 async def when_mentioned(bot, message):
