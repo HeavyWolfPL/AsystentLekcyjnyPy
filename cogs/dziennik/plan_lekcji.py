@@ -19,9 +19,9 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
     async def plan(self, ctx, arg1):
         lista_dni = ["dzisiaj", "jutro", "pojutrze", "wczoraj", "poniedzialek", "poniedziałek", "wtorek", "środa", "sroda", "czwartek", "piątek", "piatek", "sobota", "niedziela"]
         if arg1 not in lista_dni:
-            await ctx.channel.send("Nie ma planu dla tego dnia")
+            await ctx.channel.send("Nie ma planu dla tego dnia.")
             return
-        await ctx.channel.send(f'Plan lekcji: \n```{await self.get_plan_lekcji(arg1)}```')
+        await ctx.reply(f'Plan lekcji: \n```{await self.get_plan_lekcji(arg1)}```')
 
     #Doesnt work?
     # @plan.error
@@ -40,6 +40,21 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
             target_date = datetime.datetime.now() + timedelta(days=2)
         elif date == "wczoraj":
             target_date = datetime.datetime.now() - timedelta(days=1)
+        elif date in ["poniedzialek", "poniedziałek"]:
+            today = datetime.date.today()
+            target_date = today + datetime.timedelta( (0-today.weekday()) % 7 )
+        elif date == "wtorek":
+            today = datetime.date.today()
+            target_date = today + datetime.timedelta( (1-today.weekday()) % 7 )
+        elif date in ["środa", "sroda"]:
+            today = datetime.date.today()
+            target_date = today + datetime.timedelta( (2-today.weekday()) % 7 )
+        elif date == "czwartek":
+            today = datetime.date.today()
+            target_date = today + datetime.timedelta( (3-today.weekday()) % 7 )
+        elif date in ["piatek", "piątek"]:
+            today = datetime.date.today()
+            target_date = today + datetime.timedelta( (4-today.weekday()) % 7 )
         else:
             target_date = datetime.datetime.now()
 

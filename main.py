@@ -40,7 +40,11 @@ if __name__ == '__main__':
     for filename in os.listdir("cogs"):
         if filename.endswith(".py"):
             bot.load_extension(f"cogs.{filename[:-3]}")
-            print(f"Loaded - {filename[:-3]}")
+            print(f"[Cogs] Loaded - {filename[:-3]}")
+    for filename in os.listdir("cogs/dziennik"):
+        if filename.endswith(".py"):
+            bot.load_extension(f"cogs.dziennik.{filename[:-3]}")
+            print(f"[Dziennik Cogs] Loaded - {filename[:-3]}")
         
 
 # cogss = bot.get_cog('PlanLekcji')
