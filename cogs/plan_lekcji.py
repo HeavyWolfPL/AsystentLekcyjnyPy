@@ -5,36 +5,32 @@ from datetime import timedelta
 from vulcan import Keystore, Account, Vulcan
 from tabulate import tabulate
 
-async def get_config():
-    with open("config.json", "r") as config: 
-        data = json.load(config)
-        prefix = data["prefix"]
-    return prefix
+with open("config.json", "r") as config: 
+    data = json.load(config)
+    prefix = data["prefix"]
 
 class PlanLekcji(commands.Cog, name='Plan Lekcji'):
     def __init__(self, bot):
         self.bot = bot
-    print("PlanLekcji cog loaded")
 
-    bot = commands.Bot(command_prefix='!')
+    bot = commands.Bot(command_prefix=prefix)
 
     @bot.command(aliases=['lekcje', 'planlekcji'])
-    async def plan(ctx, arg1):     
-        print("T")
+    async def plan(self, ctx, arg1):
         lista_dni = ["dzisiaj", "jutro", "pojutrze", "wczoraj", "poniedzialek", "poniedziałek", "wtorek", "środa", "sroda", "czwartek", "piątek", "piatek", "sobota", "niedziela"]
-        if arg1.lower() not in lista_dni:
+        if arg1 not in lista_dni:
             await ctx.channel.send("Nie ma planu dla tego dnia")
             return
-        #await message.channel.send(f'Plan lekcji: \n```{await get_plan_lekcji()}```')
-        await ctx.channel.send('Test')
+        await ctx.channel.send(f'Plan lekcji: \n```{await self.get_plan_lekcji(arg1)}```')
+
+    #Doesnt work?
+    # @plan.error
+    # async def plan_error(ctx, error):
+    #     if isinstance(error, commands.BadArgument) or isinstance(error, commands.MissingRequiredArgument):
+    #         await ctx.channel.send("Instrukcja: `!plan <dzień> <grupa>`. \nLista dni: \n```dzisiaj, jutro, pojutrze, wczoraj, poniedzialek, poniedziałek, wtorek, środa, sroda, czwartek, piątek, piatek, sobota, niedziela```")     
     
-    async def get_plan_lekcji(date, group):
-        if date == 1:
-            MY_GROUP = 'Grupa 1'
-        if date == 2:
-            MY_GROUP = 'Grupa 2'
-        else: 
-            MY_GROUP = 'Grupa 1'
+    async def get_plan_lekcji(self, date):
+        MY_GROUP = None
 
         if date == "dzisiaj":
             target_date = datetime.datetime.now()
@@ -44,7 +40,8 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
             target_date = datetime.datetime.now() + timedelta(days=2)
         elif date == "wczoraj":
             target_date = datetime.datetime.now() - timedelta(days=1)
-        target_date = datetime.datetime.now() - timedelta(days=2)
+        else:
+            target_date = datetime.datetime.now()
 
         with open("key-config.json") as f:
             # load from a JSON string
@@ -63,13 +60,6 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
             tmp.append(lesson)
         lessons = tmp
 
-        # attendance = await dziennikClient.data.get_attendance(date_from=target_date)
-        # tmp = []
-        # async for att in attendance:
-        #     tmp.append(att)
-
-        # attendance = tmp
-        
         await dziennikClient.close()
 
         rows = []
@@ -79,9 +69,6 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
         for lesson in lessons:
             if lesson.visible:
                 all_info[lesson.time.position] = [lesson]
-        # for att in attendance:
-        #     if att.time.position in all_info.keys():
-        #         all_info[att.time.position].append(att)
 
         for key in sorted(all_info):
             try:
