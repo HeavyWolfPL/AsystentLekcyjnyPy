@@ -28,8 +28,11 @@ class Frekwencja(commands.Cog):
 
 
     async def get_frekwencja(self):
-        #target_date = datetime.datetime.now()
-        target_date = "week"
+        # if date.lower() not in ["week", "tydzien", "tydzień"]:
+        #     target_date = 'week'
+        # else:
+        #     target_date = datetime.datetime.now()
+        target_date = datetime.datetime.now()
 
         with open("key-config.json") as f:
             # load from a JSON string
