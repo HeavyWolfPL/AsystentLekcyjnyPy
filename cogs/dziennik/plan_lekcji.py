@@ -1,6 +1,5 @@
-import json
+import json, datetime
 from discord.ext import commands
-import asyncio, datetime
 from datetime import timedelta
 from vulcan import Keystore, Account, Vulcan
 from tabulate import tabulate
@@ -18,7 +17,7 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
     @bot.command(aliases=['lekcje', 'planlekcji'])
     async def plan(self, ctx, arg1):
         lista_dni = ["dzisiaj", "jutro", "pojutrze", "wczoraj", "poniedzialek", "poniedziałek", "wtorek", "środa", "sroda", "czwartek", "piątek", "piatek", "sobota", "niedziela"]
-        if arg1 not in lista_dni:
+        if arg1.lower() not in lista_dni:
             await ctx.channel.send("Nie ma planu dla tego dnia.")
             return
         await ctx.reply(f'Plan lekcji: \n```{await self.get_plan_lekcji(arg1)}```')
