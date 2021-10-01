@@ -94,8 +94,6 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
 
             if lesson.subject:
                 name = lesson.subject.name
-
-                name = lesson.subject.name
                 if len(name) > 16:
                     name = lesson.subject.code
                 else:
