@@ -45,18 +45,6 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
 
         homeworks = await dziennikClient.data.get_homework()
         tmp = []
-        tmp2 = []
-        x = 0
-
-        async for hw in homeworks:
-            if x != 1:
-                x = 1
-                tmp.append(hw)
-                tmp2.append(hw.deadline.date)
-                time = hw.deadline.date
-        homework = tmp
-        print(tmp2)
-        print(tmp)
 
         rows = []
         headers = ["Data", "Przedmiot", "Treść"]
@@ -75,7 +63,6 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
         async for hw in homeworks:
             if ((hw.deadline.date > first_day) & (hw.deadline.date < last_day)): #Check if homework is in the current week
                 all_info[number] = [hw]
-                print(f'Zad \n{all_info[number]} \n-----')
                 number+1
 
         
