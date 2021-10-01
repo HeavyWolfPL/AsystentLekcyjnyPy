@@ -109,9 +109,9 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
                 
             rows.append([str(lesson.time.position), lesson.time.displayed_time.split("-")[0] + " - " + lesson.time.displayed_time.split("-")[1], name, sala])
 
-        lekcje = tabulate(rows, headers, tablefmt="orgtbl", stralign="center")
-        print(lekcje)
-        return lekcje
+        table = tabulate(rows, headers, tablefmt="orgtbl", stralign="center")
+        print(table)
+        return table
 
 def setup(bot):
     bot.add_cog(PlanLekcji(bot))

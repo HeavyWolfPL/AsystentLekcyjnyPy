@@ -88,9 +88,9 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
                 
             rows.append([date, name, content])
 
-        lekcje = tabulate(rows, headers, tablefmt="orgtbl", stralign="center")
-        print(lekcje)
-        return lekcje
+        table = tabulate(rows, headers, tablefmt="orgtbl", stralign="center")
+        print(table)
+        return table
 
 def setup(bot):
     bot.add_cog(ZadaniaDomowe(bot))
