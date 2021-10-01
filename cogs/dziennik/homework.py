@@ -16,11 +16,6 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
 
     @bot.command(aliases=['zadania_domowe', 'zadane', 'zadaniadomowe', 'zaddom', 'hw'])
     async def homework(self, ctx):
-        lista_dni = ["dzisiaj", "jutro", "pojutrze", "wczoraj", "poniedzialek", "poniedziałek", "wtorek", "środa", "sroda", "czwartek", "piątek", "piatek"]
-        arg1 = "dzisiaj"
-        if arg1.lower() not in lista_dni:
-            await ctx.channel.send("Nie ma zadań dla tego dnia.")
-            return
         await ctx.reply(f'Plan lekcji: \n```{await self.get_homework()}```')
 
     #Doesnt work?
