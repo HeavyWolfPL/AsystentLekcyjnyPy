@@ -16,7 +16,7 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
 
     @bot.command(aliases=['zadania_domowe', 'zadane', 'zadaniadomowe', 'zaddom', 'hw'])
     async def homework(self, ctx):
-        await ctx.reply(f'Plan lekcji: \n```{await self.get_homework()}```')
+        await ctx.reply(f'Zadania domowe: \n```{await self.get_homework()}```')
 
     #Doesnt work?
     # @plan.error
