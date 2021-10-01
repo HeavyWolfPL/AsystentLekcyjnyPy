@@ -56,12 +56,12 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
         while tmp != 0: #Get first day of the week
             first_day = first_day - timedelta(days=1)
             tmp = tmp - 1
-        last_day = first_day + timedelta(days=5)
+        last_day = first_day + timedelta(days=4)
 
         homeworks = await dziennikClient.data.get_homework()
         number = 0
         async for hw in homeworks:
-            if ((hw.deadline.date > first_day) & (hw.deadline.date < last_day)): #Check if homework is in the current week
+            if ((hw.deadline.date >= first_day) & (hw.deadline.date <= last_day)): #Check if homework is in the current week
                 all_info[number] = [hw]
                 number+1
 
