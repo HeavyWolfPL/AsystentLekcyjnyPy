@@ -16,8 +16,10 @@ class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
 
     @bot.command(aliases=['tests', 'sprawdziany', 'spr', 'kartkówki', 'kartk'])
     async def testy(self, ctx):
-        await ctx.reply(f'Sprawdziany oraz Kartkówki: \n```{await self.get_tests()}```')
-        print(ctx.message.content)
+        if "za tydzien" in ctx.message.content:
+            await ctx.reply(f'Sprawdziany oraz Kartkówki: \n```{await self.get_tests("za tydzien")}```')
+        else: 
+            await ctx.reply(f'Sprawdziany oraz Kartkówki: \n```{await self.get_tests("teraz")}```')
 
     #Doesnt work?
     # @plan.error
@@ -25,7 +27,7 @@ class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
     #     if isinstance(error, commands.BadArgument) or isinstance(error, commands.MissingRequiredArgument):
     #         await ctx.channel.send("Instrukcja: `!plan <dzień> <grupa>`. \nLista dni: \n```dzisiaj, jutro, pojutrze, wczoraj, poniedzialek, poniedziałek, wtorek, środa, sroda, czwartek, piątek, piatek```")     
     
-    async def get_tests(self):
+    async def get_tests(self, arg):
 
         with open("key-config.json") as f:
             # load from a JSON string
@@ -52,17 +54,27 @@ class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
         print(tmp)
 
         rows = []
-        headers = ["Data", "Typ", "Przedmiot", "Treść", "Grupa"]
+        headers = ["Data", "Typ", "Przedmiot", "Treść"]
         all_info = {}
 
-        today = datetime.date.today()
-        tmp = today.weekday()
-        first_day = today
-        while tmp != 0: #Get first day of the week
-            first_day = first_day - timedelta(days=1)
-            tmp = tmp - 1
-        last_day = first_day + timedelta(days=4)
-        print(last_day, first_day)
+        if arg == "teraz":
+            today = datetime.date.today()
+            tmp = today.weekday()
+            first_day = today
+            while tmp != 0: #Get first day of the week
+                first_day = first_day - timedelta(days=1)
+                tmp = tmp - 1
+            last_day = first_day + timedelta(days=4)
+            print(last_day, first_day)
+        else:
+            today = datetime.date.today() + timedelta(days=7)
+            tmp = today.weekday()
+            first_day = today
+            while tmp != 0: #Get first day of the next week
+                first_day = first_day - timedelta(days=1)
+                tmp = tmp - 1
+            last_day = first_day + timedelta(days=4)
+            print(last_day, first_day)
 
         exams = await dziennikClient.data.get_exams()
         number = 0
@@ -76,10 +88,14 @@ class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
         await dziennikClient.close()
 
         group = "Brak"
+        groupsEnabled = False
 
         for key in sorted(all_info):
             exam = all_info[key][0]
-
+            
+            if exam.team_virtual != None:  
+                groupsEnabled = True
+            
             date = exam.deadline.date.strftime("%d.%m.%Y")
 
             if exam.type == "Sprawdzian":
@@ -93,7 +109,6 @@ class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
                     name = exam.subject.code
                 else:
                     name = exam.subject.name
-                print(name)
             else:
                 name = 'NO_INFO'
 
@@ -101,18 +116,14 @@ class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
                 topic = exam.topic
             else:
                 topic = 'Brak'
-
-            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            #Do a check for each exam if it has a group, before this iteration. !!!!
-            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-            if exam.team_virtual == None: 
-                headers = ["Data", "Typ", "Przedmiot", "Treść"]
-                rows.append([date, examtype, name, topic])
-            else:  
+                
+            if groupsEnabled:  
                 #Date, Type, Subject name, Topic, Group
+                headers = ["Data", "Typ", "Przedmiot", "Treść", "Grupa"]
                 group = exam.team_virtual
                 rows.append([date, examtype, name, topic, group])
+            else:
+                rows.append([date, examtype, name, topic])
 
         table = tabulate(rows, headers, tablefmt="orgtbl", stralign="center")
         print(table)
