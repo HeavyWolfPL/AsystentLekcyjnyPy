@@ -20,7 +20,7 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
         if arg1.lower() not in lista_dni:
             await ctx.channel.send("Nie ma planu dla tego dnia.")
             return
-        await ctx.reply(f'Plan lekcji: \n```{await self.get_plan_lekcji(arg1)}```')
+        await ctx.reply(f'Plan lekcji: \n```{await self.get_plan_lekcji(arg1)}```', mention_author=False)
 
     #Doesnt work?
     # @plan.error
