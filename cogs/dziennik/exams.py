@@ -17,9 +17,9 @@ class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
     @bot.command(aliases=['tests', 'sprawdziany', 'spr', 'kartkówki', 'kartk'])
     async def testy(self, ctx):
         if "za tydzien" in ctx.message.content:
-            await ctx.reply(f'Sprawdziany oraz Kartkówki: \n```{await self.get_tests("za tydzien")}```')
+            await ctx.reply(f'Sprawdziany oraz Kartkówki: \n```{await self.get_tests("za tydzien")}```', mention_author=False)
         else: 
-            await ctx.reply(f'Sprawdziany oraz Kartkówki: \n```{await self.get_tests("teraz")}```')
+            await ctx.reply(f'Sprawdziany oraz Kartkówki: \n```{await self.get_tests("teraz")}```', mention_author=False)
 
     #Doesnt work?
     # @plan.error
@@ -40,18 +40,6 @@ class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
         await dziennikClient.select_student()
 
         exams = await dziennikClient.data.get_exams()
-        tmp = []
-        tmp2 = []
-        x = 0
-
-        async for exam in exams:
-            if x != 1:
-                x = 1
-                tmp.append(exam)
-                tmp2.append(exam.deadline.date)
-        exam = tmp
-        print(tmp2)
-        print(tmp)
 
         rows = []
         headers = ["Data", "Typ", "Przedmiot", "Treść"]
