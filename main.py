@@ -72,26 +72,21 @@ async def on_message(message):
                 msg = await message.channel.send("🏓 Pong !")
                 ping = (time.monotonic() - before) * 1000
                 await msg.edit(content=f"🏓 Pong !  `{int(ping)} ms`")
-        if message.content.startswith("!setup") and message.author.id == owner_id:
-            dziennikKeystore = Keystore.create(device_model="Python Vulcan API")
-            with open("key-config.json", "w") as f:
-                # use one of the options below:
-                # write a formatted JSON representation
-                f.write(dziennikKeystore.as_json)
-            dziennikAccount = await Account.register(dziennikKeystore, dziennikToken, dziennikSymbol, dziennikPin)
-            with open("acc-config.json", "w") as f:
-                # write a formatted JSON representation
-                f.write(dziennikAccount.as_json)
-            await message.channel.send("Account and Keystore created.")
-        # if dziennik_enabled:
-        #     #Frekwencja
-        #     if message.content.startswith("!frekwencja"):
-        #         await message.channel.send(f'Frekwencja: \n```\n{await get_frekwencja()}```')
-        #     #Szczęśliwy numerek
-        #     if message.content.startswith("!numerek" or "!szczęśliwynumerek" or "!szczesliwynumerek"):
-        #         await message.channel.send(f'Szczęśliwy numerek to `{await get_luckynumber()}`')
-        if not dziennik_enabled:
-            await message.channel.send("Moduł dziennika jest wyłączony.")
+        if message.content.startswith("!setup") and str(message.author.id) == str(owner_id):
+            if dziennik_enabled:
+                dziennikKeystore = Keystore.create(device_model="Python Vulcan API")
+                with open("key-config.json", "w") as f:
+                    # use one of the options below:
+                    # write a formatted JSON representation
+                    f.write(dziennikKeystore.as_json)
+                dziennikAccount = await Account.register(dziennikKeystore, dziennikToken, dziennikSymbol, dziennikPin)
+                with open("acc-config.json", "w") as f:
+                    # write a formatted JSON representation
+                    f.write(dziennikAccount.as_json)
+                await message.channel.send("Account and Keystore created.")
+            else:
+                await message.channel.send("Moduł dziennika jest wyłączony.")
+        
 
 @bot.event
 async def when_mentioned(bot, message):
