@@ -15,7 +15,7 @@ class Numerek(commands.Cog):
 
     bot = commands.Bot(command_prefix=prefix)
 
-    @bot.command(aliases=["numerek", "szczęśliwynumerek", "szczesliwynumerek"])
+    @bot.command(aliases=["numerek", "szczęśliwynumerek", "szczesliwynumerek", "luckynumber"])
     async def numer(self, ctx):
         await ctx.channel.send(f'Szczęśliwy Numerek: `{await self.get_luckynumber()}`')
 
