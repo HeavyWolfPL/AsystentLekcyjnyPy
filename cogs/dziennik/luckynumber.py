@@ -8,6 +8,7 @@ from vulcan import Keystore
 with open("config.json", "r") as config: 
     data = json.load(config)
     prefix = data["prefix"]
+    dziennik_enabled = data["dziennik_enabled"]
 
 class Numerek(commands.Cog):
     def __init__(self, bot):
@@ -17,6 +18,9 @@ class Numerek(commands.Cog):
 
     @bot.command(aliases=["numerek", "szczęśliwynumerek", "szczesliwynumerek", "luckynumber"])
     async def numer(self, ctx):
+        if not dziennik_enabled:
+            await ctx.reply("Moduł dziennika jest wyłączony!", mention_author=False)
+            return
         await ctx.channel.send(f'Szczęśliwy Numerek: `{await self.get_luckynumber()}`')
 
     async def get_luckynumber(self):

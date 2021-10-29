@@ -7,6 +7,7 @@ from tabulate import tabulate
 with open("config.json", "r") as config: 
     data = json.load(config)
     prefix = data["prefix"]
+    dziennik_enabled = data["dziennik_enabled"]
 
 class PlanLekcji(commands.Cog, name='Plan Lekcji'):
     def __init__(self, bot):
@@ -16,6 +17,9 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
 
     @bot.command(aliases=['lekcje', 'planlekcji'])
     async def plan(self, ctx, arg1):
+        if not dziennik_enabled:
+            await ctx.reply("Moduł dziennika jest wyłączony!", mention_author=False)
+            return
         lista_dni = ["dzisiaj", "jutro", "pojutrze", "wczoraj", "poniedzialek", "poniedziałek", "wtorek", "środa", "sroda", "czwartek", "piątek", "piatek"]
         if arg1.lower() not in lista_dni:
             await ctx.channel.send("Nie ma planu dla tego dnia.")

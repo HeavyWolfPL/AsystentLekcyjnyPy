@@ -8,6 +8,7 @@ from tabulate import tabulate
 with open("config.json", "r") as config: 
     data = json.load(config)
     prefix = data["prefix"]
+    dziennik_enabled = data["dziennik_enabled"]
 
 class Oceny(commands.Cog, name='Oceny'):
     def __init__(self, bot):
@@ -17,10 +18,16 @@ class Oceny(commands.Cog, name='Oceny'):
 
     @bot.command(aliases=['oceny'])
     async def grades(self, ctx):
+        if not dziennik_enabled:
+            await ctx.reply("Moduł dziennika jest wyłączony!", mention_author=False)
+            return
         await ctx.reply(f'\n```{await self.get_grades()}```', mention_author=False)
     
     @bot.command(aliases=['ocena'])
     async def grade(self, ctx, arg1):
+        if not dziennik_enabled:
+            await ctx.reply("Moduł dziennika jest wyłączony!", mention_author=False)
+            return
         arg = str(arg1)
         if arg1 == "0":
             await ctx.reply('ID oceny musi być liczbą.', mention_author=False)

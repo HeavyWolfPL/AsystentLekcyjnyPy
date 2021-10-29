@@ -7,6 +7,7 @@ from tabulate import tabulate
 with open("config.json", "r") as config: 
     data = json.load(config)
     prefix = data["prefix"]
+    dziennik_enabled = data["dziennik_enabled"]
 
 class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
     def __init__(self, bot):
@@ -16,6 +17,9 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
 
     @bot.command(aliases=['zadania_domowe', 'zadane', 'zadaniadomowe', 'zaddom', 'hw'])
     async def homework(self, ctx):
+        if not dziennik_enabled:
+            await ctx.reply("Moduł dziennika jest wyłączony!", mention_author=False)
+            return
         await ctx.reply(f'Zadania domowe: \n```{await self.get_homework()}```', mention_author=False)
 
     #Doesnt work?

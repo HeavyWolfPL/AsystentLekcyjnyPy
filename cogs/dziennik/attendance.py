@@ -7,6 +7,7 @@ from tabulate import tabulate
 with open("config.json", "r") as config: 
     data = json.load(config)
     prefix = data["prefix"]
+    dziennik_enabled = data["dziennik_enabled"]
 
 grades = []
 lessons = []
@@ -20,6 +21,9 @@ class Frekwencja(commands.Cog):
 
     @bot.command(aliases=['obecność', 'obecnosc'])
     async def frekwencja(self, ctx):
+        if not dziennik_enabled:
+            await ctx.reply("Moduł dziennika jest wyłączony!", mention_author=False)
+            return
         # lista_dni = ["dzisiaj", "jutro", "pojutrze", "wczoraj", "poniedzialek", "poniedziałek", "wtorek", "środa", "sroda", "czwartek", "piątek", "piatek", "sobota", "niedziela"]
         # if arg1 not in lista_dni:
         #     await ctx.channel.send("Nie ma planu dla tego dnia.")
