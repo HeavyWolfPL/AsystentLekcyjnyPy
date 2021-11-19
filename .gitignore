@@ -6,3 +6,4 @@ acc-config.json
 .vs/
 .vscode/
 **/__pycache__/
+db/
