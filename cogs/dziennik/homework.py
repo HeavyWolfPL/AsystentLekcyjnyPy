@@ -3,11 +3,11 @@ from discord.ext import commands
 from datetime import timedelta
 from vulcan import Keystore, Account, Vulcan
 from tabulate import tabulate
+from cogs.dziennik.dziennik_setup import DziennikSetup
 
 with open("config.json", "r") as config: 
     data = json.load(config)
     prefix = data["prefix"]
-    dziennik_enabled = data["dziennik_enabled"]
 
 class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
     def __init__(self, bot):
@@ -17,9 +17,6 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
 
     @bot.command(aliases=['zadania_domowe', 'zadane', 'zadaniadomowe', 'zaddom', 'hw'])
     async def homework(self, ctx):
-        if not dziennik_enabled:
-            await ctx.reply("Moduł dziennika jest wyłączony!", mention_author=False)
-            return
         await ctx.reply(f'Zadania domowe: \n```{await self.get_homework()}```', mention_author=False)
 
     #Doesnt work?
@@ -30,12 +27,8 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
     
     async def get_homework(self):
 
-        with open("key-config.json") as f:
-            # load from a JSON string
-            dziennikKeystore = Keystore.load(f.read())
-        with open("acc-config.json") as f:
-            # load from a JSON string
-            dziennikAccount = Account.load(f.read())
+        dziennikKeystore = Keystore.load(await DziennikSetup.GetKeystore(id))
+        dziennikAccount = Account.load(await DziennikSetup.GetAccount(id))
         dziennikClient = Vulcan(dziennikKeystore, dziennikAccount)
 
         await dziennikClient.select_student()

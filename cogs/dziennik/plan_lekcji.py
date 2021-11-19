@@ -3,11 +3,11 @@ from discord.ext import commands
 from datetime import timedelta
 from vulcan import Keystore, Account, Vulcan
 from tabulate import tabulate
+from cogs.dziennik.dziennik_setup import DziennikSetup
 
 with open("config.json", "r") as config: 
     data = json.load(config)
     prefix = data["prefix"]
-    dziennik_enabled = data["dziennik_enabled"]
 
 class PlanLekcji(commands.Cog, name='Plan Lekcji'):
     def __init__(self, bot):
@@ -17,14 +17,11 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
 
     @bot.command(aliases=['lekcje', 'planlekcji'])
     async def plan(self, ctx, arg1):
-        if not dziennik_enabled:
-            await ctx.reply("Moduł dziennika jest wyłączony!", mention_author=False)
-            return
         lista_dni = ["dzisiaj", "jutro", "pojutrze", "wczoraj", "poniedzialek", "poniedziałek", "wtorek", "środa", "sroda", "czwartek", "piątek", "piatek"]
         if arg1.lower() not in lista_dni:
             await ctx.channel.send("Nie ma planu dla tego dnia.")
             return
-        await ctx.reply(f'Plan lekcji: \n```{await self.get_plan_lekcji(arg1)}```', mention_author=False)
+        await ctx.reply(f'Plan lekcji: \n```{await self.get_plan_lekcji(ctx.author.id, arg1)}```', mention_author=False)
 
     #Doesnt work?
     # @plan.error
@@ -32,7 +29,7 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
     #     if isinstance(error, commands.BadArgument) or isinstance(error, commands.MissingRequiredArgument):
     #         await ctx.channel.send("Instrukcja: `!plan <dzień> <grupa>`. \nLista dni: \n```dzisiaj, jutro, pojutrze, wczoraj, poniedzialek, poniedziałek, wtorek, środa, sroda, czwartek, piątek, piatek```")     
     
-    async def get_plan_lekcji(self, date):
+    async def get_plan_lekcji(self, id, date):
         MY_GROUP = None
 
         if date == "dzisiaj":
@@ -61,12 +58,8 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
         else:
             target_date = datetime.datetime.now()
 
-        with open("key-config.json") as f:
-            # load from a JSON string
-            dziennikKeystore = Keystore.load(f.read())
-        with open("acc-config.json") as f:
-            # load from a JSON string
-            dziennikAccount = Account.load(f.read())
+        dziennikKeystore = Keystore.load(await DziennikSetup.GetKeystore(id))
+        dziennikAccount = Account.load(await DziennikSetup.GetAccount(id))
         dziennikClient = Vulcan(dziennikKeystore, dziennikAccount)
 
         await dziennikClient.select_student()

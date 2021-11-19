@@ -4,11 +4,11 @@ from discord.ext import commands
 from datetime import timedelta
 from vulcan import Keystore, Account, Vulcan
 from tabulate import tabulate
+from cogs.dziennik.dziennik_setup import DziennikSetup
 
 with open("config.json", "r") as config: 
     data = json.load(config)
     prefix = data["prefix"]
-    dziennik_enabled = data["dziennik_enabled"]
 
 class Oceny(commands.Cog, name='Oceny'):
     def __init__(self, bot):
@@ -18,16 +18,10 @@ class Oceny(commands.Cog, name='Oceny'):
 
     @bot.command(aliases=['oceny'])
     async def grades(self, ctx):
-        if not dziennik_enabled:
-            await ctx.reply("Moduł dziennika jest wyłączony!", mention_author=False)
-            return
         await ctx.reply(f'\n```{await self.get_grades()}```', mention_author=False)
     
     @bot.command(aliases=['ocena'])
     async def grade(self, ctx, arg1):
-        if not dziennik_enabled:
-            await ctx.reply("Moduł dziennika jest wyłączony!", mention_author=False)
-            return
         arg = str(arg1)
         if arg1 == "0":
             await ctx.reply('ID oceny musi być liczbą.', mention_author=False)
@@ -39,12 +33,8 @@ class Oceny(commands.Cog, name='Oceny'):
 
     async def get_grade_info(self, arg1):
 
-        with open("key-config.json") as f:
-            # load from a JSON string
-            dziennikKeystore = Keystore.load(f.read())
-        with open("acc-config.json") as f:
-            # load from a JSON string
-            dziennikAccount = Account.load(f.read())
+        dziennikKeystore = Keystore.load(await DziennikSetup.GetKeystore(id))
+        dziennikAccount = Account.load(await DziennikSetup.GetAccount(id))
         dziennikClient = Vulcan(dziennikKeystore, dziennikAccount)
 
         await dziennikClient.select_student()

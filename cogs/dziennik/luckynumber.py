@@ -1,14 +1,12 @@
 import json
 import re
 from discord.ext import commands
-from vulcan import Vulcan
-from vulcan import Account
-from vulcan import Keystore
+from vulcan import Vulcan, Account, Keystore
+from cogs.dziennik.dziennik_setup import DziennikSetup
 
 with open("config.json", "r") as config: 
     data = json.load(config)
     prefix = data["prefix"]
-    dziennik_enabled = data["dziennik_enabled"]
 
 class Numerek(commands.Cog):
     def __init__(self, bot):
@@ -18,19 +16,13 @@ class Numerek(commands.Cog):
 
     @bot.command(aliases=["numerek", "szczęśliwynumerek", "szczesliwynumerek", "luckynumber"])
     async def numer(self, ctx):
-        if not dziennik_enabled:
-            await ctx.reply("Moduł dziennika jest wyłączony!", mention_author=False)
-            return
         await ctx.channel.send(f'Szczęśliwy Numerek: `{await self.get_luckynumber()}`')
 
     async def get_luckynumber(self):
-        with open("key-config.json") as f:
-            # load from a JSON string
-            dziennikKeystore = Keystore.load(f.read())
-        with open("acc-config.json") as f:
-            # load from a JSON string
-            dziennikAccount = Account.load(f.read())
+        dziennikKeystore = Keystore.load(await DziennikSetup.GetKeystore(id))
+        dziennikAccount = Account.load(await DziennikSetup.GetAccount(id))
         dziennikClient = Vulcan(dziennikKeystore, dziennikAccount)
+        
         await dziennikClient.select_student()  # select the first available student
         print(dziennikClient.student)  # print the selected student 
         lucky_number = await dziennikClient.data.get_lucky_number()

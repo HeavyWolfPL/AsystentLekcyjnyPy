@@ -37,8 +37,10 @@ Skopiuj plik config-example.json, wklej tam poprawne tokeny, a następnie zmień
 ---
 
 ### To-Do
-- Wersja globalna, jeden bot dla wszystkich uczniów poprzez przypisywanie tokenów do konta Discord.
-- Wersja discord.js
-- Discord.py v2.0
-- Informacje o zakończeniu lekcji (dzwonku)
+- Wersja globalna, jeden bot dla wszystkich uczniów poprzez przypisywanie tokenów do konta Discord,
+- Lepszy error handling,
+- Debug mode,
+- Wersja discord.js,
+- Discord.py v2.0,
+- Informacje o zakończeniu lekcji (dzwonku),
 - Wersja self-hosted dla danej klasy, wyświetlająca w statusie aktualną lekcję.

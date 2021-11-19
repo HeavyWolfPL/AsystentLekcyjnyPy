@@ -1,3 +1,4 @@
+import datetime
 import os
 import discord
 import time
@@ -6,6 +7,8 @@ from vulcan import Account
 from vulcan import Keystore
 from vulcan import Vulcan
 from discord.ext import commands
+from discord.ext.tasks import loop
+from asyncio import sleep
 
 
 # Get configuration.json
@@ -14,15 +17,9 @@ with open("config.json", "r") as config:
     prefix = data["prefix"]
     token = data["token"]
     owner_id = data["ownerID"]
-    # Dziennik
-    dziennik_enabled = data["dziennik_enabled"]
-    if dziennik_enabled:
-        dziennikToken = data["dziennikToken"]
-        dziennikSymbol = data["dziennikSymbol"]
-        dziennikPin = data["dziennikPIN"]
 
 if token == "TOKEN":
-    print("Błędny token.")
+    print("Ustaw token bota!")
     exit()
 
 def __init__(self, bot):
@@ -33,7 +30,7 @@ def __init__(self, bot):
 intents = discord.Intents.default()
 intents.members = True
 # The bot
-bot = commands.Bot(command_prefix='!', intents = intents)
+bot = commands.Bot(command_prefix=str(prefix), intents = intents)
 
 # Load cogs
 if __name__ == '__main__':
@@ -51,7 +48,15 @@ if __name__ == '__main__':
 # cmds = cogss.get_commands()
 # print([c.name for c in cmds])
 
-
+async def config_validator():
+    with open("config.json", "r") as config: 
+        data = json.load(config)
+        dziennik_mode = data["dziennik_mode"]
+    if dziennik_mode not in ["user", "global", "both"]:
+        return False
+    else:
+        return True
+    
 
 @bot.event
 async def on_ready():
@@ -59,7 +64,14 @@ async def on_ready():
 Discord.py - {discord.__version__}
 Bot by Wafelowski.dev""")
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name ="lekcje"))
-
+    x = await config_validator()
+    if (x == False):
+        print("Konfig zawiera nieodpowiedni `dziennik_mode`. Wybierz jeden z trzech dostępnych: \n- user (każdy użytkownik musi dodać swoje tokeny) \n- global (administrator bota dodaje swój token) \n- both (gdy użytkownik nie posiada dodanego własnego tokenu, użyje tokenu administratora*)\n\n* Obowiązują ograniczenia co do komend.")
+        # await ErrorHandler.Report(bot, f"Konfig zawiera nieodpowiedni `dziennik_mode`. Wybierz jeden z trzech dostępnych: \n- user (każdy użytkownik musi dodać swoje tokeny) \n- global (administrator bota dodaje swój token) \n- both (gdy użytkownik nie posiada dodanego własnego tokenu, użyje tokenu administratora*)\n\n* Obowiązują ograniczenia co do komend.", "Validator Konfigu", "69")
+        exit()
+    else:
+        print("[Validator Konfigu] Brak błędów.")
+    
 
 @bot.listen('on_message')
 async def on_message(message):
@@ -72,20 +84,6 @@ async def on_message(message):
                 msg = await message.channel.send("🏓 Pong !")
                 ping = (time.monotonic() - before) * 1000
                 await msg.edit(content=f"🏓 Pong !  `{int(ping)} ms`")
-        if message.content.startswith("!setup") and str(message.author.id) == str(owner_id):
-            if dziennik_enabled:
-                dziennikKeystore = Keystore.create(device_model="Python Vulcan API")
-                with open("key-config.json", "w") as f:
-                    # use one of the options below:
-                    # write a formatted JSON representation
-                    f.write(dziennikKeystore.as_json)
-                dziennikAccount = await Account.register(dziennikKeystore, dziennikToken, dziennikSymbol, dziennikPin)
-                with open("acc-config.json", "w") as f:
-                    # write a formatted JSON representation
-                    f.write(dziennikAccount.as_json)
-                await message.channel.send("Account and Keystore created.")
-            else:
-                await message.channel.send("Moduł dziennika jest wyłączony.")
         
 
 @bot.event
@@ -106,9 +104,10 @@ async def on_reaction_add(reaction, user):
 
 @bot.event
 async def on_command_error(ctx, error):
-    channel = bot.get_channel(847040167353122856)
-    await channel.send(ctx) 
-    await channel.send(error)
+    print(ctx)
+    print(error)
+    # await ErrorHandler.Report(bot, f"{ctx}", "on_command_error - Part 1", "X")
+    # await ErrorHandler.Report(bot, f"{error}", "on_command_error - Part 2", "X")
     raise error
 
 bot.run(token)

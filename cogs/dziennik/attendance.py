@@ -3,11 +3,11 @@ import datetime, json
 from discord.ext import commands
 from vulcan import Keystore, Account, Vulcan
 from tabulate import tabulate
+from cogs.dziennik.dziennik_setup import DziennikSetup
 
 with open("config.json", "r") as config: 
     data = json.load(config)
     prefix = data["prefix"]
-    dziennik_enabled = data["dziennik_enabled"]
 
 grades = []
 lessons = []
@@ -21,9 +21,6 @@ class Frekwencja(commands.Cog):
 
     @bot.command(aliases=['obecność', 'obecnosc'])
     async def frekwencja(self, ctx):
-        if not dziennik_enabled:
-            await ctx.reply("Moduł dziennika jest wyłączony!", mention_author=False)
-            return
         # lista_dni = ["dzisiaj", "jutro", "pojutrze", "wczoraj", "poniedzialek", "poniedziałek", "wtorek", "środa", "sroda", "czwartek", "piątek", "piatek", "sobota", "niedziela"]
         # if arg1 not in lista_dni:
         #     await ctx.channel.send("Nie ma planu dla tego dnia.")
@@ -38,12 +35,8 @@ class Frekwencja(commands.Cog):
         #     target_date = datetime.datetime.now()
         target_date = datetime.datetime.now()
 
-        with open("key-config.json") as f:
-            # load from a JSON string
-            dziennikKeystore = Keystore.load(f.read())
-        with open("acc-config.json") as f:
-            # load from a JSON string
-            dziennikAccount = Account.load(f.read())
+        dziennikKeystore = Keystore.load(await DziennikSetup.GetKeystore(id))
+        dziennikAccount = Account.load(await DziennikSetup.GetAccount(id))
         dziennikClient = Vulcan(dziennikKeystore, dziennikAccount)
 
         await dziennikClient.select_student()

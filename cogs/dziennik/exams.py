@@ -3,11 +3,11 @@ from discord.ext import commands
 from datetime import timedelta
 from vulcan import Keystore, Account, Vulcan
 from tabulate import tabulate
+from cogs.dziennik.dziennik_setup import DziennikSetup
 
 with open("config.json", "r") as config: 
     data = json.load(config)
     prefix = data["prefix"]
-    dziennik_enabled = data["dziennik_enabled"]
 
 class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
     def __init__(self, bot):
@@ -17,9 +17,6 @@ class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
 
     @bot.command(aliases=['tests', 'sprawdziany', 'spr', 'kartkówki', 'kartk'])
     async def testy(self, ctx):
-        if not dziennik_enabled:
-            await ctx.reply("Moduł dziennika jest wyłączony!", mention_author=False)
-            return
         if "za tydzien" in ctx.message.content:
             await ctx.reply(f'Sprawdziany oraz Kartkówki: \n```{await self.get_tests("za tydzien")}```', mention_author=False)
         else: 
@@ -33,12 +30,8 @@ class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
     
     async def get_tests(self, arg):
 
-        with open("key-config.json") as f:
-            # load from a JSON string
-            dziennikKeystore = Keystore.load(f.read())
-        with open("acc-config.json") as f:
-            # load from a JSON string
-            dziennikAccount = Account.load(f.read())
+        dziennikKeystore = Keystore.load(await DziennikSetup.GetKeystore(id))
+        dziennikAccount = Account.load(await DziennikSetup.GetAccount(id))
         dziennikClient = Vulcan(dziennikKeystore, dziennikAccount)
 
         await dziennikClient.select_student()
