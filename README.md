@@ -48,47 +48,47 @@ Skopiuj plik config-example.json, wklej tam poprawne tokeny, a następnie zmień
 
 - prefix
 > Sama nazwa wskazuje na funkcję tej linii. 
-> Domyślna wartość - `"!"`
+> <br>Domyślna wartość - `"!"`
 
 - token
 > Token wymagany do uruchomienia bota. Uzyskasz go tworząc bota na [tej](https://discord.com/developers/applications 'Kliknij mnie!') stronie.
-> **Nie podawaj go nikomu.**
-> Domyślna wartość - `"TOKEN_GOES_HERE"`
+> <br>**Nie podawaj go nikomu.**
+> <br>Domyślna wartość - `"TOKEN_GOES_HERE"`
 
 - ownerID
 > Pole zawierające Discord ID osoby zarządzacej botem. Uprawnia do ustawienia globalnych tokenów.
-> Domyślna wartość - `"00000000000"`
+> <br>Domyślna wartość - `"00000000000"`
 
 - errorChannel
 > Zawiera ID Kanału na który wysyłane są wszystkie błędy, które występują podczas działania bota. 
-> Zalecane jest, by kanał był dostępny tylko dla osoby zarządzającej botem.
-> Domyślna wartość - `"00000000000"`
+> <br>Zalecane jest, by kanał był dostępny tylko dla osoby zarządzającej botem.
+> <br>Domyślna wartość - `"00000000000"`
 
 - debug
 > Opcja używana do znalezenia błędów. Włączenie tej opcji spowoduje wysyłanie znacznie większej ilości logów do konsoli.
-> Domyślna wartość - `"false"`
+> <br>Domyślna wartość - `"false"`
 
 **Konfiguracja Dziennika**
 
 - dziennik_mode
 > Tryb użytkowania dziennika. Posiada 3 opcje; `"global"`, `"user"` oraz `"both"`.
-> Opcja `"global"` oznacza ustawienie tokenu przez osobę zarządzającą. Informacje z dziennika będą pobierane z jej konta, zgodnie z ustawieniem `RODO`.
-> Opcja `"user"` zmusza każdego użytkownika do dodania własnego tokenu do bota poprzez komendę. 
-> Opcja `"both"` to hybryda obu powyższych opcji. Jeśli użytkownik nie ma ustawionego tokenu, użyty zostanie token globalny, zgodnie z ustawieniem `RODO`.
+> <br>Opcja `"global"` oznacza ustawienie tokenu przez osobę zarządzającą. Informacje z dziennika będą pobierane z jej konta, zgodnie z ustawieniem `RODO`.
+> <br>Opcja `"user"` zmusza każdego użytkownika do dodania własnego tokenu do bota poprzez komendę. 
+> <br>Opcja `"both"` to hybryda obu powyższych opcji. Jeśli użytkownik nie ma ustawionego tokenu, użyty zostanie token globalny, zgodnie z ustawieniem `RODO`.
 
 - RODO
 > Nazwa tej opcji powinna częściowo tłumaczyć jej funkcjonalność. Ustawienie tej opcji na `"true"` w przypadku trybów `global` oraz `both` spowoduje wyłączenie komend, które mogą zawierać dane które mogą być uznane za osobiste. Opcja ta ignoruje osobę zarządzająca. Aktualnie są to `!oceny`, `!ocena` oraz `!frekwencja`.
-> Domyślna wartość - `"true"`
+> <br>Domyślna wartość - `"true"`
 
 **Konfiguracja Embedów**
 
 - footerCopyright
 > Tekst wyświetlany w stopce embedów.
-> Domyślna wartość - `"Wafelowski.dev"`
+> <br>Domyślna wartość - `"Wafelowski.dev"`
 
 - footerCopyrightImage
 > Zawiera URL obrazka, który będzie wyświetlany w stopce embeda.
-> Domyślna wartość - `"https://i.imgur.com/g3a3tLo.png"`
+> <br>Domyślna wartość - `"https://i.imgur.com/g3a3tLo.png"`
 
 </details>
 
