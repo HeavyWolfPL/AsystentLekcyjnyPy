@@ -16,11 +16,14 @@ class Numerek(commands.Cog):
 
     @bot.command(aliases=["numerek", "szczęśliwynumerek", "szczesliwynumerek", "luckynumber"])
     async def numer(self, ctx):
-        await ctx.channel.send(f'Szczęśliwy Numerek: `{await self.get_luckynumber()}`')
+        await ctx.channel.send(f'{await self.get_luckynumber()}')
 
     async def get_luckynumber(self):
-        dziennikKeystore = Keystore.load(await DziennikSetup.GetKeystore(id))
-        dziennikAccount = Account.load(await DziennikSetup.GetAccount(id))
+        try:
+            dziennikKeystore = Keystore.load(await DziennikSetup.GetKeystore(id))
+            dziennikAccount = Account.load(await DziennikSetup.GetAccount(id))
+        except FileNotFoundError:
+            return f"<@{id}>, nie znaleziono danych twojego konta."
         dziennikClient = Vulcan(dziennikKeystore, dziennikAccount)
         
         await dziennikClient.select_student()  # select the first available student
@@ -33,7 +36,7 @@ class Numerek(commands.Cog):
             lucky_number = number.group(1)
         if lucky_number == "0":
             lucky_number = "Brak"
-        return lucky_number
+        return f"Szczęśliwy Numerek: `{lucky_number}`"
 
 def setup(bot):
     bot.add_cog(Numerek(bot))
