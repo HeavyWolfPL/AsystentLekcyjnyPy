@@ -82,7 +82,7 @@ class DziennikSetup(commands.Cog, name='Ustawienia modułu dziennika'):
             await ctx.send("Brak uprawnień!")
             raise error
         else:
-            await ctx.send(f"Wystąpił błąd! **Treść**: \n```{error}```")
+            await ctx.send(f"**Wystąpił błąd!** Treść: \n```{error}```")
 
     async def RegisterAccount(self, id, token, symbol, pin, mode):
         if (mode == "global") or dziennik_mode == "global":
