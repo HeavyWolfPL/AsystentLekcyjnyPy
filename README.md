@@ -104,8 +104,17 @@ Skopiuj plik config-example.json, wklej tam poprawne tokeny, a następnie zmień
 - Wersja self-hosted dla danej klasy, wyświetlająca w statusie aktualną lekcję.
 - Konfiguracja per-user (możliwość wyboru szkoły, studenta, wysyłanie wrażliwych komend poprzez DM)
 
+---
+
+### Uznanie Autorstwa
+- Kapi2289 za [Vulcan-API](https://github.com/kapi2289/vulcan-api),
+- Team [Wulkanowy](https://wulkanowy.github.io) za skradzione od nich pomysły, m.in. na przetworzenie informacji,
+- Majroch za kod [planu Lekcji](https://github.com/Majroch/plan-lekcji), na którym do teraz bazuję,
+- UONET+ za dziennik Vulcan ~~i zepsucie marzeń dzieciom~~,
+
+--- 
 
 ## **Uwaga**
 
 #### Wszelkie informacje logowania nie są w jakikolwiek sposób szyfrowane przed dostępem innych osób zewnętrznych lub nie, mogących otworzyć te pliki. Dodajesz swój token na **WŁASNĄ** odpowiedzialność. Pozwala to na prawie pełny dostęp do dziennika, taka osoba może wysyłać wiadomości bez potrzeby znania hasła, może również uzyskać twoje dane personalne.
-#### Nie dodawaj swojego tokenu botowi, któremu nie ufasz. Ten bot nigdy nie został zaprojektowany by być bezpiecznym. <br>Rozważ użycie wersji oficjalnej bota, nie jest ona w pełni open-source. Kod odpowiadający za szyfrowanie jest niepubliczny.
+#### Nie dodawaj swojego tokenu botowi, któremu nie ufasz. Ten bot nigdy nie został zaprojektowany by być bezpiecznym. <br>Rozważ użycie [wersji oficjalnej]("https://github.com/HeavyWolfPL/AsystentLekcyjnyPy/") bota, nie jest ona w pełni open-source. Kod odpowiadający za szyfrowanie jest niepubliczny, a wszystkie tokeny są trzymane na prywatnym serwerze z dostępem tylko jednej osoby.
