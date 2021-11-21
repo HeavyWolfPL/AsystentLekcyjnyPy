@@ -49,10 +49,10 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
     bot = commands.Bot(command_prefix=prefix)
 
     @bot.command(aliases=['zadania_domowe', 'zadane', 'zadaniadomowe', 'zaddom', 'hw'])
-    async def homework(self, ctx, arg1):
+    async def homework(self, ctx, data):
         lista_dni = ["dzisiaj", "obecny", "aktualny", "ten_tydzień", "ten_tydzien", "za_tydzień", "za_tydzien", "następny", "nastepny", "przyszły", "przyszly"]
-        regex = re.search(r'^([1-9]|0[1-9]|1[0-9]|2[0-9]|3[0-1])(\.|-|/)([1-9]|0[1-9]|1[0-2])(\.|-|/)([0-9][0-9]|20[0-9][0-9])$', arg1)
-        if arg1 not in lista_dni:
+        regex = re.search(r'^([1-9]|0[1-9]|1[0-9]|2[0-9]|3[0-1])(\.|-|/)([1-9]|0[1-9]|1[0-2])(\.|-|/)([0-9][0-9]|20[0-9][0-9])$', data)
+        if data not in lista_dni:
             if regex == None:
                 embed=discord.Embed(description=help_description, color=0xdaa454, timestamp=ctx.message.created_at)
                 embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
@@ -61,20 +61,20 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
                 return
             elif regex.group(0):
                 try:
-                    arg1 = datetime.datetime.strptime(str(regex.group(0)).replace(".", "/"), '%d/%m/%Y')
+                    data = datetime.datetime.strptime(str(regex.group(0)).replace(".", "/"), '%d/%m/%Y')
                 except:
-                    arg1 = datetime.datetime.strptime(str(regex.group(0)).replace(".", "/"), '%d/%m/%y')
+                    data = datetime.datetime.strptime(str(regex.group(0)).replace(".", "/"), '%d/%m/%y')
             else:
                 print("Wystąpił błąd")
                 return
-        await ctx.reply(f'{await self.get_homework(ctx.author.id, arg1)}', mention_author=False)
+        await ctx.reply(f'{await self.get_homework(ctx.author.id, data)}', mention_author=False)
 
     @homework.error
     async def homework_error(self, ctx, error):
         if isinstance(error, commands.errors.CommandInvokeError):
             error = error.original
         if isinstance(error, commands.errors.MissingRequiredArgument):
-            if error.param.name == "arg1":
+            if error.param.name == "data":
                 embed=discord.Embed(description=help_description, color=0xdaa454, timestamp=ctx.message.created_at)
                 embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
                 embed.set_footer(text=f"{footer} | dla {ctx.author.name}#{ctx.author.discriminator}", icon_url=footer_img)

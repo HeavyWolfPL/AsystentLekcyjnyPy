@@ -49,16 +49,16 @@ class Frekwencja(commands.Cog):
     bot = commands.Bot(command_prefix=prefix)
 
     @bot.command(aliases=['obecność', 'obecnosc', 'ob', 'obecny', 'nieobecności', 'nieobecnosci'])
-    async def frekwencja(self, ctx, arg1):
-        arg1 = arg1.lower()
+    async def frekwencja(self, ctx, data):
+        data = data.lower()
         if (dziennik_mode in ["both", "global"]) and (rodo == True):
             path = pathlib.Path(f'db/{id}/acc-config.json')
             if not pathlib.Path.exists(path):
                 print("[RODO Mode - Attendance] Użytkownik nie posiada własnego tokenu. Anuluję...")
                 await ctx.send("Nie mogę tego zrobić ze względu na włączony tryb **RODO**. Ustaw swój własny token, by móc użyć tej komendy.")
         lista_dni = ["dzisiaj", "wczoraj", "poniedzialek", "poniedziałek", "wtorek", "środa", "sroda", "czwartek", "piątek", "piatek"]
-        regex = re.search(r'^([1-9]|0[1-9]|1[0-9]|2[0-9]|3[0-1])(\.|-|/)([1-9]|0[1-9]|1[0-2])(\.|-|/)([0-9][0-9]|20[0-9][0-9])$', arg1)
-        if arg1 not in lista_dni:
+        regex = re.search(r'^([1-9]|0[1-9]|1[0-9]|2[0-9]|3[0-1])(\.|-|/)([1-9]|0[1-9]|1[0-2])(\.|-|/)([0-9][0-9]|20[0-9][0-9])$', data)
+        if data not in lista_dni:
             if regex == None:
                 embed=discord.Embed(description=help_description, color=0xdaa454, timestamp=ctx.message.created_at)
                 embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
@@ -67,9 +67,9 @@ class Frekwencja(commands.Cog):
                 return
             elif regex.group(0):
                 try:
-                    arg1 = datetime.datetime.strptime(str(regex.group(0)).replace(".", "/"), '%d/%m/%Y')
+                    data = datetime.datetime.strptime(str(regex.group(0)).replace(".", "/"), '%d/%m/%Y')
                 except:
-                    arg1 = datetime.datetime.strptime(str(regex.group(0)).replace(".", "/"), '%d/%m/%y')
+                    data = datetime.datetime.strptime(str(regex.group(0)).replace(".", "/"), '%d/%m/%y')
             else:
                 print("Wystąpił błąd")
                 return
@@ -77,14 +77,14 @@ class Frekwencja(commands.Cog):
         embed=discord.Embed(description=description, color=0xdaa454, timestamp=ctx.message.created_at)
         embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
         embed.set_footer(text=f"{footer} | dla {ctx.author.name}#{ctx.author.discriminator}", icon_url=footer_img)
-        await ctx.send(embed=embed, view=self.Frekwencja_RODO_Button(ctx, arg1))
+        await ctx.send(embed=embed, view=self.Frekwencja_RODO_Button(ctx, data))
 
     @frekwencja.error
     async def frekwencja_error(self, ctx, error):
         if isinstance(error, commands.errors.CommandInvokeError):
             error = error.original
         if isinstance(error, commands.errors.MissingRequiredArgument):
-            if error.param.name == "arg1":
+            if error.param.name == "data":
                 embed=discord.Embed(description=help_description, color=0xdaa454, timestamp=ctx.message.created_at)
                 embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
                 embed.set_footer(text=f"{footer} | dla {ctx.author.name}#{ctx.author.discriminator}", icon_url=footer_img)

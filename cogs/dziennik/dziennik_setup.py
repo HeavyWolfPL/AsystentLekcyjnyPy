@@ -12,7 +12,7 @@ with open("config.json", "r") as config:
         dziennikSymbol = data["dziennikSymbol"]
         dziennikPin = data["dziennikPIN"]
 
-class DziennikSetup(commands.Cog, name='Ustawienia modułu dziennika'):
+class DziennikSetup(commands.Cog, name='Ustawienia'):
     def __init__(self, bot):
         self.bot = bot
 
@@ -20,63 +20,63 @@ class DziennikSetup(commands.Cog, name='Ustawienia modułu dziennika'):
 
     if dziennik_mode == "both":
         @bot.command(name='setup')
-        async def setupcmd(self, ctx, arg1, arg2, arg3, arg4):
+        async def setupcmd(self, ctx, tryb, token, symbol, pin):
             #await ctx.message.delete()
             availableModes = "user"
             if str(ctx.author.id) == str(owner_id):
                 availableModes = "user i global"
-            if arg1 not in "user global":
+            if tryb not in "user global":
                 await ctx.channel.send(f"Musisz podać tryb, dla którego chcesz ustawić passy. \nDostępne: `{availableModes}`")
                 return
-            if (arg1 == "global") and ("global" not in availableModes):
+            if (tryb == "global") and ("global" not in availableModes):
                 await ctx.channel.send("Nie posiadasz uprawnień do danych logowania.")
                 return
-            if len(arg2) != 7:
+            if len(token) != 7:
                 await ctx.channel.send("Błędny token.")
                 return
-            if len(arg3) < 1:
+            if len(symbol) < 1:
                 await ctx.channel.send("Błędny symbol.")
                 return
-            if len(arg4) != 6:
+            if len(pin) != 6:
                 await ctx.channel.send("Błędny numer PIN.")
                 return
-            if arg1 == "user":
-                await ctx.channel.send(await self.RegisterAccount(ctx.author.id, arg2, arg3, arg4, "user"))
-            if arg1 == "global":
-                await ctx.channel.send(await self.RegisterAccount(ctx.author.id, arg2, arg3, arg4, "global"))
+            if tryb == "user":
+                await ctx.channel.send(await self.RegisterAccount(ctx.author.id, token, symbol, pin, "user"))
+            if tryb == "global":
+                await ctx.channel.send(await self.RegisterAccount(ctx.author.id, token, symbol, pin, "global"))
     else:
         @bot.command(name='setup')
-        async def setupcmd(self, ctx, arg1, arg2, arg3):
+        async def setupcmd(self, ctx, token, symbol, pin):
             await ctx.message.delete()
             if (dziennik_mode == "global") and str(ctx.author.id) != str(owner_id):
                 await ctx.channel.send("Nie posiadasz uprawnień do danych logowania.")
                 return
-            if len(arg1) != 7:
+            if len(token) != 7:
                 await ctx.channel.send("Błędny token.")
                 return
-            if len(arg2) < 1:
+            if len(symbol) < 1:
                 await ctx.channel.send("Błędny symbol.")
                 return
-            if len(arg3) != 6:
+            if len(pin) != 6:
                 await ctx.channel.send("Błędny numer PIN.")
                 return
-            await ctx.channel.send(await self.RegisterAccount(ctx.author.id, arg1, arg2, arg3, dziennik_mode))
+            await ctx.channel.send(await self.RegisterAccount(ctx.author.id, token, symbol, pin, dziennik_mode))
 
     @setupcmd.error
     async def setup_error(self, ctx, error):
         if isinstance(error, commands.errors.CommandInvokeError):
             error = error.original
         if isinstance(error, commands.errors.MissingRequiredArgument):
-            if error.param.name == "arg1":
+            if error.param.name == "tryb":
                 availableModes = "user"
                 if str(ctx.author.id) == str(owner_id):
                     availableModes = ["user", "global"]
                 await ctx.channel.send(f"Musisz podać tryb, dla którego chcesz ustawić passy. \nDostępne: `{availableModes}`")
-            if error.param.name == "arg2":
+            if error.param.name == "token":
                 await ctx.channel.send("Błędny token.")
-            if error.param.name == "arg3":
+            if error.param.name == "symbol":
                 await ctx.channel.send("Błędny symbol.")
-            if error.param.name == "arg4":
+            if error.param.name == "pin":
                 await ctx.channel.send("Błędny numer PIN.")
         elif isinstance(error, commands.errors.MissingPermissions):
             await ctx.send("Brak uprawnień!")

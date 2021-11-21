@@ -31,14 +31,14 @@ class Oceny(commands.Cog, name='Oceny'):
         await ctx.reply(f'\n{await self.get_grades(ctx.author.id)}', mention_author=False)
     
     @bot.command(aliases=['ocena'])
-    async def grade(self, ctx, arg1):
+    async def grade(self, ctx, id_oceny):
         if (dziennik_mode in ["both", "global"]) and (rodo == True):
             path = pathlib.Path(f'db/{id}/acc-config.json')
             if not pathlib.Path.exists(path):
                 print("[RODO Mode - Get_Grades] Użytkownik nie posiada własnego tokenu. Anuluję...")
                 return "Nie mogę tego zrobić ze względu na włączony tryb **RODO**. Ustaw swój własny token, by móc użyć tej komendy."
-        arg = str(arg1)
-        if arg1 == "0":
+        arg = str(id_oceny)
+        if id_oceny == "0":
             await ctx.reply('ID oceny musi być liczbą.', mention_author=False)
         elif await self.get_grade_info(arg, ctx.author.id) == 'False':
             await ctx.reply('Nie znaleziono oceny o podanym ID.', mention_author=False)
@@ -51,7 +51,7 @@ class Oceny(commands.Cog, name='Oceny'):
         if isinstance(error, commands.errors.CommandInvokeError):
             error = error.original
         if isinstance(error, commands.errors.MissingRequiredArgument):
-            if error.param.name == "arg1":
+            if error.param.name == "id_oceny":
                 description = """Nie podano poprawnego ID oceny. \nID Oceny to liczba z nawiasu."""
                 embed=discord.Embed(description=description, color=0xdaa454, timestamp=ctx.message.created_at)
                 embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
@@ -63,7 +63,7 @@ class Oceny(commands.Cog, name='Oceny'):
         else:
             await ctx.send(f"**Wystąpił błąd!** Treść: \n```{error}```")
 
-    async def get_grade_info(self, arg1, id):
+    async def get_grade_info(self, id_oceny, id):
         
         try:
             dziennikKeystore = Keystore.load(await DziennikSetup.GetKeystore(id))
@@ -92,7 +92,7 @@ class Oceny(commands.Cog, name='Oceny'):
             if GradeExists == True:
                 break
 
-            if str(grade.id) == str(arg1):
+            if str(grade.id) == str(id_oceny):
                 if grade.column.subject:
                     name = grade.column.subject.name
                     if len(name) > 16:
