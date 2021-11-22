@@ -106,20 +106,20 @@ async def on_command_error(ctx, error):
 ##################
 
 @bot.command()
-async def ping(self, ctx):
+async def ping(ctx):
     before = time.monotonic()
     msg = await ctx.channel.send("🏓 Pong !")
     ping = (time.monotonic() - before) * 1000
     await msg.edit(content=f"🏓 Pong !  `{int(ping)} ms`")
 
 @bot.command(aliases=["wyłącz", "wylacz", "off"])
-async def shutdown(self, ctx):
+async def shutdown(ctx):
     if ctx.author.id == owner_id:
         await ctx.channel.send("Okej")
         exit()
 
 @bot.command(aliases=["przeładuj", "przeladuj"])
-async def reload(self, ctx, arg1):
+async def reload(ctx, arg1):
     if ctx.author.id == owner_id:
         try:
             bot.reload_extension(arg1)
@@ -128,7 +128,7 @@ async def reload(self, ctx, arg1):
             await ctx.channel.send(f"**Nie udało się przeładować coga!** Treść: ```\n{e}```")
 
 @reload.error
-async def reload_error(self, ctx, error):
+async def reload_error(ctx, error):
     if isinstance(error, commands.errors.CommandInvokeError):
         error = error.original
     if isinstance(error, commands.errors.MissingRequiredArgument):
