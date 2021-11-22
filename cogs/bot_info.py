@@ -13,7 +13,7 @@ with open("config.json", "r") as config:
 bot = commands.Bot(command_prefix=prefix)
 bot.help_command = None
 
-lista_cogów = ["Frekwencja", "Ustawienia", "Kartkówki i Sprawdziany", "Oceny", "Zadania domowe", "Numerek", "Plan Lekcji", "Pozostałe"]
+lista_cogów = ["frekwencja", "ustawienia", "kartkówki i sprawdziany", "kartkówki i sprawdziany", "oceny", "zadania domowe", "numerek", "plan Lekcji", "pozostałe", "pozostale"]
 
 lista_komend = ["daty", "data", "dni", "tygodnie", "help", "komendy", "pomoc", "cmds", "frekwencja", "obecność", "obecnosc", "ob", "obecny", "nieobecności", "nieobecnosci", "setup", "testy", "tests", "sprawdziany", "spr", "kartkówki", "kartkowki", "kartk", "grades", "oceny", "grade", "ocena", "homework", "zadania_domowe", "zadane", "zadaniadomowe", "zaddom", "hw", "numer", "numerek", "szczęśliwynumerek", "szczesliwynumerek", "luckynumber", "plan", "lekcje", "planlekcji"]
 
@@ -26,12 +26,16 @@ class BotInfo(commands.Cog, name="Pozostałe"):
     async def help(self, ctx, komenda):
         komenda = komenda.lower()
         if komenda not in lista_komend:
-            tmp = "Nie znaleziono podanej komendy. Czy chcesz wyświetlić główną stronę?"
-            embed=discord.Embed(description=tmp, color=0xdaa454, timestamp=ctx.message.created_at)
-            embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
-            embed.set_footer(text=f"{footer} | dla {ctx.author.name}#{ctx.author.discriminator}", icon_url=footer_img)
-            await ctx.send(embed=embed, view=self.NotFound_Button(ctx))
-            return
+            if komenda in lista_cogów:
+                await self.show_cog_info(ctx, komenda)
+                return
+            else:
+                tmp = "Nie znaleziono podanej komendy. Czy chcesz wyświetlić główną stronę?"
+                embed=discord.Embed(description=tmp, color=0xdaa454, timestamp=ctx.message.created_at)
+                embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
+                embed.set_footer(text=f"{footer} | dla {ctx.author.name}#{ctx.author.discriminator}", icon_url=footer_img)
+                await ctx.send(embed=embed, view=self.NotFound_Button(ctx))
+                return
         else:
             await self.show_command_info(ctx, komenda)
 
@@ -77,30 +81,30 @@ Poniżej znajdziesz listę komend. Jeśli potrzebujesz, możesz uzyskać informa
         if komenda in ["frekwencja", "obecność", "obecnosc", "ob", "obecny", "nieobecności", "nieobecnosci"]:
             tmp = f"""\n`{p}frekwencja <data>` \n```ini\n[Aliasy] \n!ob | !obecny | !obecność | !nieobecności \n\n[Argumenty] \n<data> - Akceptowalny system dat, wpisz "!help daty" by uzyskać więcej informacji```"""
             tmp2 = "Frekwencja"
-        elif komenda in ["testy", "tests", "sprawdziany", "spr", "kartkówki", "kartkowki", "kartk", "Sprawdziany i kartkówki"]:
+        elif komenda in ["testy", "tests", "sprawdziany", "spr", "kartkówki", "kartkowki", "kartk"]:
             tmp = f"""\n`{p}testy <data>` \n```ini\n[Aliasy] \n!spr | !sprawdziany | !kartk | !kartkówki | !tests \n\n[Argumenty] \n<data/tydzień> - Akceptowalny system dat, wpisz "!help daty" by uzyskać więcej informacji```"""
             tmp2 = "Kartkówki i Sprawdziany"
         elif komenda in ["oceny", "grades", "grade", "ocena"]:
             tmp = f"""\n`{p}oceny` \n```ini\n[Aliasy] \n!grades``` \n`{p}ocena <ID>` \n```ini\n[Aliasy] \n{p}grade \n\n[Argumenty] \n<ID> - Identyfikator oceny pozyskiwany przez komendę !oceny. Znajduje się w nawiasie```"""
             tmp2 = "Oceny"
-        elif komenda in ["homework", "zadania_domowe", "zadane", "zadaniadomowe", "zaddom", "hw", "Zadania", "Zadania domowe"]:
+        elif komenda in ["homework", "zadania_domowe", "zadane", "zadaniadomowe", "zaddom", "hw"]:
             tmp = f"""\n`{p}zadane <data>` \n```ini\n[Aliasy] \n!hw | !homework | !zaddom | !zadaniadomowe | !zadania_domowe \n\n[Argumenty] \n<data> - Akceptowalny system dat, wpisz "!help daty" by uzyskać więcej informacji```"""
             tmp2 = "Zadania Domowe"
-        elif komenda in ["numer", "numerek", "szczęśliwynumerek", "szczesliwynumerek", "luckynumber", "Szczęśliwy numerek"]:
+        elif komenda in ["numer", "numerek", "szczęśliwynumerek", "szczesliwynumerek", "luckynumber"]:
             tmp = f"""\n`{p}numerek` \n```ini\n[Aliasy] \n!numer | !szczęśliwynumerek | !luckynumber```"""
             tmp2 = "Szczęśliwy Numerek"
-        elif komenda in ["plan", "lekcje", "planlekcji", "Plan Lekcji"]:
+        elif komenda in ["plan", "lekcje", "planlekcji"]:
             tmp = f"""\n`{p}plan <data>` \n```ini\n[Aliasy] \n!lekcje | !planlekcji \n\n[Argumenty] \n<data> - Akceptowalny system dat, wpisz "!help daty" by uzyskać więcej informacji```"""
             tmp2 = "Plan Lekcji"
-        elif komenda in ["help", "komendy", "pomoc", "cmds", "Pozostałe", "Pozostale"]:
-            tmp = f"""\n`{p}help (cmd/kat)` \n```ini\n[Aliasy] \n!cmds | !pomoc | !komendy \n\n[Argumenty] \n(cmd/kat) - Komenda lub kategoria. Listę kategorii oraz komend znajdziesz pod tą właśnie komendą.``` \n`{p}ping` \n```ini\n[Opis] \nPo prostu ping, na co liczysz?```"""
+        elif komenda in ["help", "komendy", "pomoc", "cmds"]:
+            tmp = f"""\n`{p}help (cmd/kat)` \n```ini\n[Aliasy] \n!cmds | !pomoc | !komendy \n\n[Argumenty] \n(cmd/kat) - Komenda lub kategoria. Listę kategorii oraz komend znajdziesz pod tą właśnie komendą.```"""
             tmp2 = "Pozostałe"
         elif komenda in ["setup"]:
             if dziennik_mode == "both":
                 tmp = f"""\n`{p}setup <tryb> <token> <symbol> <pin>` \n```ini\n[Opis] \nPozwala na ustawienie konta do dziennika. \n\n[Argumenty] \n<tryb> - Tryb dla którego chcesz ustawić konto. \n<token> - Token uzyskiwany podczas tworzenia mobilnego dostępu. 7 znakowy \n<symbol> - Określenie na region dziennika, np. leszno \n<pin> - PIN uzyskiwany razem z tokenem oraz symbolem. 6 znakowy```"""
                 tmp2 = "Ustawienia"
             else:
-                tmp = f"""\n`{p}setup <token> <symbol> <pin>` \n```ini\n[Opis] \nPozwala na ustawienie konta do dziennika. \n\n[Argumenty] \n<token> - Token uzyskiwany podczas tworzenia mobilnego dostępu. 7 znakowy \n<symbol> - Określenie na region dziennika, np. leszno \n<pin> - PIN uzyskiwany razem z tokenem oraz symbolem. 6 znakowy```"""
+                tmp = f"""\n`{p}setup <token> <symbol> <pin>` \n```ini\n[Opis] \nPozwala na ustawienie konta do dziennika. Użyj "!setup info" by uzyskać instrukcję uzyskania danych do konta. \n\n[Argumenty] \n<token> - Token uzyskiwany podczas tworzenia mobilnego dostępu. 7 znakowy \n<symbol> - Określenie na region dziennika, np. leszno \n<pin> - PIN uzyskiwany razem z tokenem oraz symbolem. 6 znakowy``` \n`{p}delsetup` \n```ini\n[Opis] \nPozwala na usunięcie zapisanego konta.```"""
                 tmp2 = "Ustawienia"
         elif komenda in ["daty", "data", "dni", "tygodnie"]:
             tmp = f"""
@@ -129,6 +133,23 @@ Poniżej znajdziesz listę komend. Jeśli potrzebujesz, możesz uzyskać informa
             tmp2 = "System dat, dni oraz tygodnii"
         else:
             tmp = """Nie udało się znaleźć strony pomocy dla wybranej komendy."""
+            tmp2 = "Wystąpił błąd"
+            
+        embed=discord.Embed(title=tmp2, description=tmp, color=0xdaa454, timestamp=ctx.message.created_at)
+        embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
+        embed.set_footer(text=f"{footer} | dla {ctx.author.name}#{ctx.author.discriminator}", icon_url=footer_img)
+        await ctx.reply(embed=embed, view=self.RemoveEmbed_Button(ctx), mention_author=False)
+
+    async def show_cog_info(self, ctx, cog):
+        if cog in ["pozostałe", "pozostale"]:
+            tmp = f"""\n`{p}help (cmd/kat)` \n```ini\n[Aliasy] \n!cmds | !pomoc | !komendy \n\n[Argumenty] \n(cmd/kat) - Komenda lub kategoria. Listę kategorii oraz komend znajdziesz pod tą właśnie komendą.``` 
+`{p}ping` \n```ini\n[Opis] \nPo prostu ping, na co liczysz?```
+`{p}wyłącz` \n```ini\n[Opis] \nZamyka proces bota. \n\n[Aliasy] \n{p}off | {p}shutdown```
+`{p}przeładuj` \n```ini\n[Opis] \nPrzeładowuje wybrany cog. \n\n[Aliasy] \n{p}reload \n\n[Argumenty] \n<cog> - Nazwa coga.```
+"""
+            tmp2 = "Pozostałe"
+        else:
+            tmp = """Nie udało się znaleźć strony pomocy dla wybranej kategorii."""
             tmp2 = "Wystąpił błąd"
             
         embed=discord.Embed(title=tmp2, description=tmp, color=0xdaa454, timestamp=ctx.message.created_at)
