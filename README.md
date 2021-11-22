@@ -4,8 +4,8 @@ Bot łączący się z API dziennika Vulcan UONET+ uzyskując w ten sposób róż
 
 ## Instalacja
 ### **Wymagania**
-- [Python 3.7.8+](https://www.python.org/downloads/release/python-378/)
-- [Discord.py 1.7.3+](https://github.com/Rapptz/discord.py/tree/v1.7.3)
+- [Python 3.8.10+](https://www.python.org/downloads/release/python-378/)
+- [Discord.py 2.0.0a+](https://github.com/Rapptz/discord.py/)
 - [Tabulate](https://pypi.org/project/tabulate/)
 - [Vulcan-API](https://github.com/kapi2289/vulcan-api)
 
@@ -99,7 +99,6 @@ Skopiuj plik config-example.json, wklej tam poprawne tokeny, a następnie zmień
 - Lepszy error handling,
 - Debug mode,
 - Wersja discord.js,
-- Discord.py v2.0,
 - Informacje o zakończeniu lekcji (dzwonku),
 - Wersja self-hosted dla danej klasy, wyświetlająca w statusie aktualną lekcję.
 - Konfiguracja per-user (możliwość wyboru szkoły, studenta, wysyłanie wrażliwych komend poprzez DM)
@@ -107,6 +106,7 @@ Skopiuj plik config-example.json, wklej tam poprawne tokeny, a następnie zmień
 ---
 
 ### Uznanie Autorstwa
+Podziękowania dla:
 - Kapi2289 za [Vulcan-API](https://github.com/kapi2289/vulcan-api),
 - Team [Wulkanowy](https://wulkanowy.github.io) za skradzione od nich pomysły, m.in. na przetworzenie informacji,
 - Majroch za kod [planu Lekcji](https://github.com/Majroch/plan-lekcji), na którym do teraz bazuję,
