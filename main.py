@@ -1,15 +1,10 @@
-import datetime
-import os
-import discord
-import time
-import json
+import discord, os, json, time
 from vulcan import Account
 from vulcan import Keystore
 from vulcan import Vulcan
 from discord.ext import commands
 from discord.ext.tasks import loop
 from asyncio import sleep
-
 
 # Get configuration.json
 with open("config.json", "r") as config: 
@@ -31,6 +26,7 @@ intents = discord.Intents.default()
 intents.members = True
 # The bot
 bot = commands.Bot(command_prefix=str(prefix), intents = intents)
+bot.help_command = None
 
 # Load cogs
 if __name__ == '__main__':
@@ -42,11 +38,10 @@ if __name__ == '__main__':
         if filename.endswith(".py"):
             bot.load_extension(f"cogs.dziennik.{filename[:-3]}")
             print(f"[Dziennik Cogs] Loaded - {filename[:-3]}")
-        
 
-# cogss = bot.get_cog('PlanLekcji')
-# cmds = cogss.get_commands()
-# print([c.name for c in cmds])
+######################
+## Config validator ##
+######################
 
 async def config_validator():
     with open("config.json", "r") as config: 
@@ -57,6 +52,9 @@ async def config_validator():
     else:
         return True
     
+##################
+### Bot events ###
+##################
 
 @bot.event
 async def on_ready():
@@ -73,17 +71,10 @@ Bot by Wafelowski.dev""")
         print("[Validator Konfigu] Brak błędów.")
     
 
-@bot.listen('on_message')
+#@bot.listen('on_message')
 async def on_message(message):
     if message.author.id != bot.user.id:
-        if message.content.startswith("!off"):
-                await message.channel.send("Okej")
-                exit()
-        if message.content.startswith("!ping"):
-                before = time.monotonic()
-                msg = await message.channel.send("🏓 Pong !")
-                ping = (time.monotonic() - before) * 1000
-                await msg.edit(content=f"🏓 Pong !  `{int(ping)} ms`")
+        print("on_message event works!")
         
 
 @bot.event
@@ -109,5 +100,44 @@ async def on_command_error(ctx, error):
     # await ErrorHandler.Report(bot, f"{ctx}", "on_command_error - Part 1", "X")
     # await ErrorHandler.Report(bot, f"{error}", "on_command_error - Part 2", "X")
     raise error
+
+##################
+## Bot commands ##
+##################
+
+@bot.command()
+async def ping(self, ctx):
+    before = time.monotonic()
+    msg = await ctx.channel.send("🏓 Pong !")
+    ping = (time.monotonic() - before) * 1000
+    await msg.edit(content=f"🏓 Pong !  `{int(ping)} ms`")
+
+@bot.command(aliases=["wyłącz", "wylacz", "off"])
+async def shutdown(self, ctx):
+    if ctx.author.id == owner_id:
+        await ctx.channel.send("Okej")
+        exit()
+
+@bot.command(aliases=["przeładuj", "przeladuj"])
+async def reload(self, ctx, arg1):
+    if ctx.author.id == owner_id:
+        try:
+            bot.reload_extension(arg1)
+            ctx.send("Przeładowano pomyślnie!")
+        except Exception as e:
+            await ctx.channel.send(f"**Nie udało się przeładować coga!** Treść: ```\n{e}```")
+
+@reload.error
+async def reload_error(self, ctx, error):
+    if isinstance(error, commands.errors.CommandInvokeError):
+        error = error.original
+    if isinstance(error, commands.errors.MissingRequiredArgument):
+        if error.param.name == "arg1":
+            await ctx.send("Nie podano nazwy coga!")
+    elif isinstance(error, commands.errors.MissingPermissions):
+        await ctx.send("Brak uprawnień!")
+        raise error
+    else:
+        await ctx.send(f"**Wystąpił błąd!** Treść: \n```{error}```")
 
 bot.run(token)
