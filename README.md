@@ -76,6 +76,10 @@ Skopiuj plik config-example.json, wklej tam poprawne tokeny, a następnie zmień
 > <br>Opcja `"user"` zmusza każdego użytkownika do dodania własnego tokenu do bota poprzez komendę. 
 > <br>Opcja `"both"` to hybryda obu powyższych opcji. Jeśli użytkownik nie ma ustawionego tokenu, użyty zostanie token globalny, zgodnie z ustawieniem `RODO`.
 
+- api_name
+> Nazwa API w interfejsie dziennika w celu łatwego rozróżnienia. Dodawana do nazwy bota, oznacza to że cała nazwa będzie brzmieć:
+> <br>`Wirtualny Asystent Lekcyjny w Pythonie - <api_name>`. Dodatkowo do nazwy dodane zostanie [G] jeśli konto jest globalne.
+
 - RODO
 > Nazwa tej opcji powinna częściowo tłumaczyć jej funkcjonalność. Ustawienie tej opcji na `"true"` w przypadku trybów `global` oraz `both` spowoduje wyłączenie komend, które mogą zawierać dane które mogą być uznane za osobiste. Opcja ta ignoruje osobę zarządzająca. Aktualnie są to `!oceny`, `!ocena` oraz `!frekwencja`.
 > <br>Domyślna wartość - `"true"`
