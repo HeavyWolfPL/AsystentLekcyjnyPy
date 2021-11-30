@@ -47,7 +47,7 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
                 embed=discord.Embed(description=help_description, color=0xdaa454, timestamp=ctx.message.created_at)
                 embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
                 embed.set_footer(text=f"{footer} | dla {ctx.author.name}#{ctx.author.discriminator}", icon_url=footer_img)
-                await ctx.send(embed=embed, view=self.Frekwencja_Button(ctx))
+                await ctx.send(embed=embed, view=self.Plan_Button(ctx))
                 return
             elif regex.group(0):
                 try:
