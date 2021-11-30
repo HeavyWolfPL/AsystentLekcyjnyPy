@@ -40,7 +40,7 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
 
     @bot.command(aliases=['lekcje', 'planlekcji'])
     async def plan(self, ctx, data):
-        lista_dni = ["dzisiaj", "jutro", "pojutrze", "wczoraj", "poniedzialek", "poniedziałek", "wtorek", "środa", "sroda", "czwartek", "piątek", "piatek"]
+        lista_dni = ["dziś", "dzis", "dzisiaj", "jutro", "pojutrze", "wczoraj", "poniedzialek", "poniedziałek", "wtorek", "środa", "sroda", "czwartek", "piątek", "piatek"]
         regex = re.search(r'^([1-9]|0[1-9]|1[0-9]|2[0-9]|3[0-1])(\.|-|/)([1-9]|0[1-9]|1[0-2])(\.|-|/)([0-9][0-9]|20[0-9][0-9])$', data)
         if data.lower() not in lista_dni:
             if regex == None:
@@ -166,7 +166,7 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
     async def get_plan_lekcji(self, id, date):
         MY_GROUP = None
 
-        if date == "dzisiaj":
+        if date in ["dzisiaj", "dziś", "dzis", "teraz"]:
             target_date = datetime.datetime.now()
         elif date == "jutro":
             target_date = datetime.datetime.now() + timedelta(days=1)
