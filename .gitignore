@@ -7,3 +7,4 @@ acc-config.json
 .vscode/
 **/__pycache__/
 db/
+logs/
