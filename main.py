@@ -1,3 +1,4 @@
+import datetime
 import discord, os, json, time
 from vulcan import Account
 from vulcan import Keystore
@@ -5,6 +6,7 @@ from vulcan import Vulcan
 from discord.ext import commands
 from discord.ext.tasks import loop
 from asyncio import sleep
+from cogs.dziennik.dziennik_setup import DziennikSetup
 
 # Get configuration.json
 with open("config.json", "r") as config: 
@@ -12,6 +14,7 @@ with open("config.json", "r") as config:
     prefix = data["prefix"]
     token = data["token"]
     owner_id = data["ownerID"]
+    lessonStatus = data["dziennik_lessonStatus"]
 
 if token == "TOKEN":
     print("Ustaw token bota!")
@@ -52,16 +55,61 @@ async def config_validator():
     else:
         return True
     
+@loop(seconds=60)
+async def lesson_status():
+    try:
+        dziennikKeystore = Keystore.load(await DziennikSetup.GetKeystore(owner_id, True))
+        dziennikAccount = Account.load(await DziennikSetup.GetAccount(owner_id, True))
+    except FileNotFoundError:
+        return f"[Dziennik Status Lekcji] Nie znaleziono danych dla globalnego konta dziennika! Upewnij sie, ze owner_id jest prawidlowe oraz jest ustawiony globalny klucz."
+    dziennikClient = Vulcan(dziennikKeystore, dziennikAccount)
+    await dziennikClient.select_student()
+
+    target_date = datetime.date.today()
+    now = datetime.datetime.now()
+    ctime = datetime.time(now.hour, now.minute)
+    
+    lessons = await dziennikClient.data.get_lessons(date_from=target_date)
+    tmp = []
+    all_info = {}
+
+    async for lesson in lessons:
+        tmp.append(lesson)
+    lessons = tmp
+    await dziennikClient.close()
+
+    if lessons == []:
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.playing, name ="dzień wolny"))
+        await sleep(900)
+
+    for lesson in lessons:
+        if lesson.visible:
+                all_info[lesson.time.position] = [lesson]
+
+    lessonFound = False
+    for key in sorted(all_info):
+        lesson = all_info[key][0]
+        if ((lesson.time.from_ <= ctime) & (lesson.time.to > ctime)):
+            await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=lesson.subject.name))
+            lessonFound = True
+            break
+    
+    if lessonFound == False:
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="przerwa"))
+
 ##################
 ### Bot events ###
 ##################
+
+
+    
 
 @bot.event
 async def on_ready():
     print(f"""Zalogowano jako {bot.user}
 Discord.py - {discord.__version__}
 Bot by Wafelowski.dev""")
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name ="lekcje"))
+    #await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name ="lekcje"))
     x = await config_validator()
     if (x == False):
         print("Konfig zawiera nieodpowiedni `dziennik_mode`. Wybierz jeden z trzech dostępnych: \n- user (każdy użytkownik musi dodać swoje tokeny) \n- global (administrator bota dodaje swój token) \n- both (gdy użytkownik nie posiada dodanego własnego tokenu, użyje tokenu administratora*)\n\n* Obowiązują ograniczenia co do komend.")
@@ -69,6 +117,10 @@ Bot by Wafelowski.dev""")
         exit()
     else:
         print("[Validator Konfigu] Brak błędów.")
+    if lessonStatus == True:
+        print("[Dziennik] Status Aktywny")
+        lesson_status.start()
+
     
 
 #@bot.listen('on_message')
