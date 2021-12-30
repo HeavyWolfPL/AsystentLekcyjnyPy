@@ -1,14 +1,22 @@
-import datetime
-import discord, os, json, time
+# Vulcan
 from vulcan import Account
 from vulcan import Keystore
 from vulcan import Vulcan
+from cogs.dziennik.dziennik_setup import DziennikSetup
+# Discord
+import discord
 from discord.ext import commands
 from discord.ext.tasks import loop
 from asyncio import sleep
-from cogs.dziennik.dziennik_setup import DziennikSetup
+# Other
+import datetime
+import os, json, time, logging
+from pathlib import Path
 
-# Get configuration.json
+################
+## Get config ##
+################
+
 with open("config.json", "r") as config: 
     data = json.load(config)
     prefix = data["prefix"]
@@ -24,14 +32,35 @@ def __init__(self, bot):
     self.bot = bot
     self._last_member = None
 
-# Intents
+
+#############
+## The Bot ##
+#############
+
 intents = discord.Intents.default()
 intents.members = True
-# The bot
 bot = commands.Bot(command_prefix=str(prefix), intents = intents)
 bot.help_command = None
 
-# Load cogs
+#############
+## Logging ##
+#############
+
+logs_dir = Path("./logs")
+if (logs_dir.exists() == False) or (logs_dir.is_dir() == False):
+    logs_dir.mkdir()
+logger = logging.getLogger('discord')
+logger.setLevel(logging.INFO)
+now = datetime.datetime.now().strftime("%d-%m-%Y %H-%M-%S")
+handler = logging.FileHandler(filename=f"logs/{str(now)}.log", encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
+print("[Logging] Aktywne.")
+
+###############
+## Load Cogs ##
+############### 
+
 if __name__ == '__main__':
     for filename in os.listdir("cogs"):
         if filename.endswith(".py"):
