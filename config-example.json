@@ -21,6 +21,7 @@
 	"dziennik_mode": "global / user / both",
 	"api_name": "Nazwa API",
 	"RODO": true,
+	"dziennik_lessonStatus": true,
 
 	"_Separator6_": 	"---------------------------",
 	"_Embeds_": 		"-------Embed Settings------",
