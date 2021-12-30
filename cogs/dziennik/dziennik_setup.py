@@ -1,7 +1,6 @@
 import json, datetime, pathlib, discord
 from discord.ext import commands
 from vulcan import Keystore, Account, Vulcan
-
 from cogs.bot_info import BotInfo
 
 with open("config.json", "r") as config:
@@ -215,7 +214,7 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
         if (mode == "global") or dziennik_mode == "global":
             path = pathlib.Path(f'db/')
             path.mkdir(parents=True, exist_ok=True)
-            keystore = Keystore.create(device_model=f"Wirtualny Aystent Lekcyjny w Pythonie - {api_name} [G]")
+            keystore = Keystore.create(device_model=f"WALP - {api_name} [G]")
             with open(f'db/key-config.json', "w") as f:
                 # write a formatted JSON representation
                 f.write(keystore.as_json)
@@ -227,7 +226,7 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
         if (mode == "user") or dziennik_mode == "user":
             path = pathlib.Path(f'db/{id}/')
             path.mkdir(parents=True, exist_ok=True)
-            keystore = Keystore.create(device_model=f"Wirtualny Aystent Lekcyjny w Pythonie - {api_name}")
+            keystore = Keystore.create(device_model=f"WALP - {api_name}")
             with open(f'db/{id}/key-config.json', "w") as f:
                 # write a formatted JSON representation
                 f.write(keystore.as_json)
@@ -237,55 +236,63 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
                 f.write(account.as_json)
             return "Konto oraz API zostało zarejestrowane."
         
-    async def GetAccount(id):
+    async def GetAccount(id, silent=False):
         if dziennik_mode == "both":
             path = pathlib.Path(f'db/{id}/acc-config.json')
             if pathlib.Path.exists(path):
                 with open(f"db/{id}/acc-config.json") as f:
                     dziennikAccount = f.read()
-                    print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Account of {id} loaded...")
+                    if silent == False:
+                        print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Account of {id} loaded...")
                     return dziennikAccount
             else:
                 with open("db/acc-config.json") as f:
                     dziennikAccount = f.read()
-                    print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Global account loaded...")
+                    if silent == False:
+                        print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Global account loaded...")
                     return dziennikAccount
         elif dziennik_mode == "global":
             with open("db/acc-config.json") as f:
                 dziennikAccount = f.read()
-                print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Global account loaded...")
+                if silent == False:
+                    print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Global account loaded...")
                 return dziennikAccount
         elif dziennik_mode == "user":
             with open(f"db/{id}/acc-config.json") as f:
                 dziennikAccount = f.read()
-                print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Account of {id} loaded...")
+                if silent == False:
+                    print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Account of {id} loaded...")
                 return dziennikAccount
         else: 
             print("Dziennik mode uległ zmianie od momentu uruchomienia bota. Anulowanie funkcji")
             return False
 
-    async def GetKeystore(id):
+    async def GetKeystore(id, silent=False):
         if dziennik_mode == "both":
             path = pathlib.Path(f'db/{id}/key-config.json')
             if pathlib.Path.exists(path):
                 with open(f"db/{id}/key-config.json") as f:
                     dziennikKeystore = f.read()
-                    print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Keystore of {id} loaded...")
+                    if silent == False:
+                        print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Keystore of {id} loaded...")
                     return dziennikKeystore
             else:
                 with open("db/key-config.json") as f:
                     dziennikKeystore = f.read()
-                    print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Global keystore loaded...")
+                    if silent == False:
+                        print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Global keystore loaded...")
                     return dziennikKeystore
         elif dziennik_mode == "global":
             with open("db/key-config.json") as f:
                 dziennikKeystore = f.read()
-                print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Global keystore loaded...")
+                if silent == False:
+                    print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Global keystore loaded...")
                 return dziennikKeystore
         elif dziennik_mode == "user":
             with open(f"db/{id}/key-config.json") as f:
                 dziennikKeystore = f.read()
-                print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Keystore of {id} loaded...")
+                if silent == False:
+                    print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Keystore of {id} loaded...")
                 return dziennikKeystore
         else: 
             # await ErrorHandler.Report(DziennikSetup.bot, f"Dziennik mode uległ zmianie od momentu uruchomienia bota. Anulowanie funkcji.", "Dziennik Setup/GetKeystore", "170")
