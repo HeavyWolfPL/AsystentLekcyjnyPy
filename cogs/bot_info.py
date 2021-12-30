@@ -75,7 +75,7 @@ Poniżej znajdziesz listę komend. Jeśli potrzebujesz, możesz uzyskać informa
             embed.add_field(name="Ustawienia", value=f"`{p}setup <token> <symbol> <pin>`", inline=False)
 
         embed.add_field(name="Pozostałe", value=f"`{p}help <komenda>` \n`{p}ping`", inline=False)
-        await ctx.reply(embed=embed, view=self.RemoveEmbed_Button(ctx), mention_author=False)
+        await ctx.reply(embed=embed, view=BotInfo.RemoveEmbed_Button(ctx), mention_author=False)
 
     async def show_command_info(self, ctx, komenda):
         if komenda in ["frekwencja", "obecność", "obecnosc", "ob", "obecny", "nieobecności", "nieobecnosci"]:
@@ -138,7 +138,7 @@ Poniżej znajdziesz listę komend. Jeśli potrzebujesz, możesz uzyskać informa
         embed=discord.Embed(title=tmp2, description=tmp, color=0xdaa454, timestamp=ctx.message.created_at)
         embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
         embed.set_footer(text=f"{footer} | dla {ctx.author.name}#{ctx.author.discriminator}", icon_url=footer_img)
-        await ctx.reply(embed=embed, view=self.RemoveEmbed_Button(ctx), mention_author=False)
+        await ctx.reply(embed=embed, view=BotInfo.RemoveEmbed_Button(ctx), mention_author=False)
 
     async def show_cog_info(self, ctx, cog):
         if cog in ["pozostałe", "pozostale"]:
@@ -155,7 +155,7 @@ Poniżej znajdziesz listę komend. Jeśli potrzebujesz, możesz uzyskać informa
         embed=discord.Embed(title=tmp2, description=tmp, color=0xdaa454, timestamp=ctx.message.created_at)
         embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
         embed.set_footer(text=f"{footer} | dla {ctx.author.name}#{ctx.author.discriminator}", icon_url=footer_img)
-        await ctx.reply(embed=embed, view=self.RemoveEmbed_Button(ctx), mention_author=False)
+        await ctx.reply(embed=embed, view=BotInfo.RemoveEmbed_Button(ctx), mention_author=False)
 
     class RemoveEmbed_Button(discord.ui.View):
         def __init__(self, ctx):
