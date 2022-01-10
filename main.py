@@ -119,7 +119,11 @@ async def lesson_status():
     for key in sorted(all_info):
         lesson = all_info[key][0]
         if ((lesson.time.from_ <= ctime) & (lesson.time.to > ctime)):
-            await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=lesson.subject.name))
+            if lesson.subject == None:
+                przedmiot = lesson.event
+            else:
+                przedmiot = lesson.subject.name
+            await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=przedmiot))
             lessonFound = True
             break
     
