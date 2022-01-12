@@ -7,7 +7,7 @@
 	"token": "TOKEN_GOES_HERE",
 	"ownerID": "YOUR_ID",
 	"errorChannel": "CHANNEL_ID_GOES_HERE",
-	"debug": "false",
+	"debug": false,
 
 	"_Separator3_": 	"---------------------------",
 	"_DziennikConfig_": "-----Dziennik Settings-----",

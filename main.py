@@ -23,8 +23,9 @@ with open("config.json", "r") as config:
     token = data["token"]
     owner_id = data["ownerID"]
     lessonStatus = data["dziennik_lessonStatus"]
+    debug = data["debug"]
 
-if token == "TOKEN":
+if token == "TOKEN_GOES_HERE":
     print("Ustaw token bota!")
     exit()
 
@@ -50,7 +51,10 @@ logs_dir = Path("./logs")
 if (logs_dir.exists() == False) or (logs_dir.is_dir() == False):
     logs_dir.mkdir()
 logger = logging.getLogger('discord')
-logger.setLevel(logging.INFO)
+if debug:
+    logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.INFO)
 now = datetime.datetime.now().strftime("%d-%m-%Y %H-%M-%S")
 handler = logging.FileHandler(filename=f"logs/{str(now)}.log", encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
@@ -79,10 +83,15 @@ async def config_validator():
     with open("config.json", "r") as config: 
         data = json.load(config)
         dziennik_mode = data["dziennik_mode"]
+        api_name = data["api_name"]
+    msg = ""
+    if debug not in [True, False]:
+        msg += "\n[Validator Konfigu] Debug musi mieć wartość true lub false!"
+    if len(api_name) > 24:
+        msg += "\n[Validator Konfigu] Nazwa API jest za długa!"
     if dziennik_mode not in ["user", "global", "both"]:
-        return False
-    else:
-        return True
+        msg += "\n[Validator Konfigu] Konfig zawiera nieodpowiedni `dziennik_mode`. Wybierz jeden z trzech dostępnych: \n- user (każdy użytkownik musi dodać swoje tokeny) \n- global (administrator bota dodaje swój token) \n- both (gdy użytkownik nie posiada dodanego własnego tokenu, użyje tokenu administratora*)\n\n* Obowiązują ograniczenia co do komend.\n"    
+    return msg
     
 @loop(seconds=60)
 async def lesson_status():
@@ -144,12 +153,12 @@ Discord.py - {discord.__version__}
 Bot by Wafelowski.dev""")
     #await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name ="lekcje"))
     x = await config_validator()
-    if (x == False):
-        print("Konfig zawiera nieodpowiedni `dziennik_mode`. Wybierz jeden z trzech dostępnych: \n- user (każdy użytkownik musi dodać swoje tokeny) \n- global (administrator bota dodaje swój token) \n- both (gdy użytkownik nie posiada dodanego własnego tokenu, użyje tokenu administratora*)\n\n* Obowiązują ograniczenia co do komend.")
+    if (x == ""):
+        print("[Validator Konfigu] Brak błędów.")
+    else:
+        print(x)
         # await ErrorHandler.Report(bot, f"Konfig zawiera nieodpowiedni `dziennik_mode`. Wybierz jeden z trzech dostępnych: \n- user (każdy użytkownik musi dodać swoje tokeny) \n- global (administrator bota dodaje swój token) \n- both (gdy użytkownik nie posiada dodanego własnego tokenu, użyje tokenu administratora*)\n\n* Obowiązują ograniczenia co do komend.", "Validator Konfigu", "69")
         exit()
-    else:
-        print("[Validator Konfigu] Brak błędów.")
     if lessonStatus == True:
         print("[Dziennik] Status Aktywny")
         lesson_status.start()
