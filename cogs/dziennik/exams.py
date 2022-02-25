@@ -1,9 +1,11 @@
-import discord, json, datetime, re
+import discord, json, datetime, re, sys
 from discord.ext import commands
 from datetime import timedelta
 from vulcan import Keystore, Account, Vulcan
 from tabulate import tabulate
 from cogs.dziennik.dziennik_setup import DziennikSetup
+from cogs.a_logging_handler import Logger
+dziennik_log = Logger.dziennik_log
 
 with open("config.json", "r") as config: 
     data = json.load(config)
@@ -52,8 +54,8 @@ class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
     @bot.command(aliases=['tests', 'sprawdziany', 'spr', 'kartkówki', "kartkowki", 'kartk'])
     async def testy(self, ctx, data):
         lista_dni = ["dzisiaj", "obecny", "aktualny", "ten_tydzień", "ten_tydzien", "za_tydzień", "za_tydzien", "następny", "nastepny", "przyszły", "przyszly"]
-        regex = re.search(r'^([1-9]|0[1-9]|1[0-9]|2[0-9]|3[0-1])(\.|-|/)([1-9]|0[1-9]|1[0-2])(\.|-|/)([0-9][0-9]|20[0-9][0-9])$', data)
         if data not in lista_dni:
+            regex = re.search(r'^([1-9]|0[1-9]|1[0-9]|2[0-9]|3[0-1])(\.|-|/)([1-9]|0[1-9]|1[0-2])(\.|-|/)([0-9][0-9]|20[0-9][0-9])$', data)
             if regex == None:
                 embed=discord.Embed(description=help_description, color=0xdaa454, timestamp=ctx.message.created_at)
                 embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
@@ -66,8 +68,8 @@ class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
                 except:
                     data = datetime.datetime.strptime(str(regex.group(0)).replace(".", "/"), '%d/%m/%y')
             else:
-                print("Wystąpił błąd")
-                return
+                dziennik_log.error("Wystąpił błąd! [Sprawdziany i Kartkówki - %s]", sys._getframe().f_lineno)
+                return f"Wystąpił błąd! [Sprawdziany i Kartkówki - {sys._getframe().f_lineno}]"
         await ctx.reply(f'{await self.get_tests(ctx.author.id, data)}', mention_author=False)
 
     @testy.error
@@ -99,10 +101,12 @@ class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
 
         @discord.ui.button(label="Aktualny tydzień", style=discord.ButtonStyle.blurple)
         async def aktualny(self, button: discord.ui.Button, interaction: discord.Interaction):
+            dziennik_log.debug("Użytkownik {}#{} ({}) wybrał Sprawdziany i Kartkówki z aktualnego tygodnia.".format(interaction.user.name, interaction.user.discriminator, interaction.user.id))
             await interaction.response.send_message(f'{await Sprawdziany.get_tests(Sprawdziany, interaction.user.id, "aktualny")}', ephemeral=True)
 
         @discord.ui.button(label="Przyszły tydzień", style=discord.ButtonStyle.blurple)
         async def przyszly(self, button: discord.ui.Button, interaction: discord.Interaction):
+            dziennik_log.debug("Użytkownik {}#{} ({}) wybrał Sprawdziany i Kartkówki z przyszłego tygodnia.".format(interaction.user.name, interaction.user.discriminator, interaction.user.id))
             await interaction.response.send_message(f'{await Sprawdziany.get_tests(Sprawdziany, interaction.user.id, "przyszły")}', ephemeral=True)
         
         @discord.ui.button(label="Anuluj", style=discord.ButtonStyle.red)
@@ -203,6 +207,7 @@ class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
 
         tabela = tabulate(rows, headers, tablefmt="orgtbl", stralign="center")
         print(tabela)
+        dziennik_log.debug(f"Wyświetlono sprawdziany i kartkówki z {first_day}-{last_day}.")
         return f"Sprawdziany oraz Kartkówki: \n```{tabela}```"
 
 def setup(bot):

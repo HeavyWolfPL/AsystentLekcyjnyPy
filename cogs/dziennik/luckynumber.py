@@ -1,8 +1,9 @@
-import json
-import re
+import json, re, logging
 from discord.ext import commands
 from vulcan import Vulcan, Account, Keystore
 from cogs.dziennik.dziennik_setup import DziennikSetup
+from cogs.a_logging_handler import Logger
+dziennik_log = Logger.dziennik_log
 
 with open("config.json", "r") as config: 
     data = json.load(config)
@@ -27,15 +28,15 @@ class Numerek(commands.Cog):
         dziennikClient = Vulcan(dziennikKeystore, dziennikAccount)
         
         await dziennikClient.select_student()  # select the first available student
-        print(dziennikClient.student)  # print the selected student 
         lucky_number = await dziennikClient.data.get_lucky_number()
         await dziennikClient.close()
-        #print(f'{str(lucky_number)}')
+        
         number = re.search('number=(.+?)\)', str(lucky_number))
         if number:
             lucky_number = number.group(1)
         if lucky_number == "0":
             lucky_number = "Brak"
+        dziennik_log.debug("Numerek to: " + lucky_number)
         return f"Szczęśliwy Numerek: `{lucky_number}`"
 
 def setup(bot):

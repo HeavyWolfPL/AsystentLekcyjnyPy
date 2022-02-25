@@ -1,7 +1,9 @@
-import json, datetime, pathlib, discord
+import json, datetime, pathlib, discord, sys
 from discord.ext import commands
 from vulcan import Keystore, Account, Vulcan
 from cogs.bot_info import BotInfo
+from cogs.a_logging_handler import Logger
+dziennik_log = Logger.dziennik_log
 
 with open("config.json", "r") as config:
     data = json.load(config)
@@ -14,7 +16,7 @@ with open("config.json", "r") as config:
 
 class DziennikSetup(commands.Cog, name='Ustawienia'):
     def __init__(self, bot):
-        self.bot = bot
+        self.bot = bot 
 
     bot = commands.Bot(command_prefix=prefix)
 
@@ -122,7 +124,8 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
                 await ctx.send(f"Nie posiadasz ustawionego konta!")
                 return
             else:
-                await ctx.send(f"Wystąpił błąd! [DelSetup - 125]")
+                dziennik_log.error("Wystąpił błąd! [DziennikSetup - %s]", sys._getframe().f_lineno)
+                await ctx.send(f"Wystąpił błąd! [DziennikSetup - {sys._getframe().f_lineno}]")
                 return
             embed=discord.Embed(description=description, color=0xdaa454, timestamp=ctx.message.created_at)
             embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
@@ -140,6 +143,7 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
         async def tak(self, button: discord.ui.Button, interaction: discord.Interaction):
             if self.ctx.author == interaction.user:
                 await interaction.message.delete()
+                dziennik_log.info("Użytkownik %s#%s (%s) potwierdził usunięcie konta %s.", self.ctx.author.name, self.ctx.author.discriminator, self.ctx.author.id, self.mode)
                 await interaction.response.send_message(f'{await DziennikSetup.DeleteAccount(DziennikSetup, interaction.user.id, self.mode)}', ephemeral=True)
             else:
                 await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
@@ -148,6 +152,7 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
         async def delete(self, button: discord.ui.Button, interaction: discord.Interaction):
             if self.ctx.author == interaction.user:
                 await self.ctx.message.delete()
+                dziennik_log.debug("Użytkownik %s#%s (%s) anulował usunięcie konta %s.", self.ctx.author.name, self.ctx.author.discriminator, self.ctx.author.id, self.mode)
                 await interaction.message.delete()
             else:
                 await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
@@ -161,6 +166,7 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
         async def globalne(self, button: discord.ui.Button, interaction: discord.Interaction):
             if self.ctx.author == interaction.user:
                 await interaction.message.delete()
+                dziennik_log.info("Użytkownik %s#%s (%s) potwierdził usunięcie globalnego konta.", self.ctx.author.name, self.ctx.author.discriminator, self.ctx.author.id)
                 await interaction.response.send_message(f'{await DziennikSetup.DeleteAccount(DziennikSetup, interaction.user.id, "global")}', ephemeral=True)
             else:
                 await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
@@ -169,6 +175,7 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
         async def uzytkownika(self, button: discord.ui.Button, interaction: discord.Interaction):
             if self.ctx.author == interaction.user:
                 await interaction.message.delete()
+                dziennik_log.info("Użytkownik %s#%s (%s) potwierdził usunięcie konta użutkownika.", self.ctx.author.name, self.ctx.author.discriminator, self.ctx.author.id)
                 await interaction.response.send_message(f'{await DziennikSetup.DeleteAccount(DziennikSetup, interaction.user.id, "user")}', ephemeral=True)
             else:
                 await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
@@ -177,6 +184,7 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
         async def delete(self, button: discord.ui.Button, interaction: discord.Interaction):
             if self.ctx.author == interaction.user:
                 await self.ctx.message.delete()
+                dziennik_log.debug("Użytkownik %s#%s (%s) anulował usunięcie konta %s.", self.ctx.author.name, self.ctx.author.discriminator, self.ctx.author.id, self.mode)
                 await interaction.message.delete()
             else:
                 await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
@@ -191,9 +199,11 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
                 try: 
                     pathlib.Path.unlink(path)
                     pathlib.Path.unlink(path2)
+                    dziennik_log.info("Globalne konto zostało usunięte.")
                     return "Usunięto globalne konto."
                 except Exception as e:
-                    return f"**Wystąpił błąd podczas usuwania konta!** Treść: \n```{e}```"
+                    dziennik_log.error("Wystąpił błąd podczas usuwania globalnego konta! Treść: \n%s", e)
+                    return f"**Wystąpił błąd podczas usuwania globalnego konta!** Treść: \n```{e}```"
         if mode == "user":
             path = pathlib.Path(f'db/{id}/acc-config.json')
             path2 = pathlib.Path(f'db/{id}/key-config.json')
@@ -201,13 +211,16 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
                 try: 
                     pathlib.Path.unlink(path)
                     pathlib.Path.unlink(path2)
+                    dziennik_log.info("Konto użytkownika %s zostało usunięte.", id)
                     return "Usunięto konto użytkownika."
                 except Exception as e:
-                    return f"**Wystąpił błąd podczas usuwania konta!** Treść: \n```{e}```"
+                    dziennik_log.error("Wystąpił błąd podczas usuwania konta użytkownika %s! Treść: \n%s", id, e)
+                    return f"**Wystąpił błąd podczas usuwania konta {id}!** Treść: \n```{e}```"
             elif (not pathlib.Path.exists(path)) and (not pathlib.Path.exists(path2)):
                 return f"Nie posiadasz ustawionego konta!"
             else:
-                return f"Wystąpił błąd! [DelSetup - 125]"
+                dziennik_log.error("Wystąpił błąd! [DziennikSetup - %s]", sys._getframe().f_lineno)
+                return f"Wystąpił błąd! [DziennikSetup - {sys._getframe().f_lineno}]"
         
 
     async def RegisterAccount(self, id, token, symbol, pin, mode):
@@ -216,12 +229,13 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
             path.mkdir(parents=True, exist_ok=True)
             keystore = Keystore.create(device_model=f"WALP - {api_name} [G]")
             with open(f'db/key-config.json', "w") as f:
-                # write a formatted JSON representation
+                # write a formatted JSON 
                 f.write(keystore.as_json)
             account = await Account.register(keystore, token, symbol, pin)
             with open(f'db/acc-config.json', "w") as f:
                 # write a formatted JSON representation
                 f.write(account.as_json)
+            dziennik_log.info("Konto oraz API zostało zarejestrowane w trybie Global.")
             return "Konto oraz API zostało zarejestrowane w trybie Global."
         if (mode == "user") or dziennik_mode == "user":
             path = pathlib.Path(f'db/{id}/')
@@ -234,6 +248,7 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
             with open(f'db/{id}/acc-config.json', "w") as f:
                 # write a formatted JSON representation
                 f.write(account.as_json)
+            dziennik_log.info("Konto i API użytkownika %s zostało zarejestrowane.", id)
             return "Konto oraz API zostało zarejestrowane."
         
     async def GetAccount(id, silent=False):
@@ -244,27 +259,33 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
                     dziennikAccount = f.read()
                     if silent == False:
                         print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Account of {id} loaded...")
+                        dziennik_log.debug("Account of %s loaded...", id)
                     return dziennikAccount
             else:
                 with open("db/acc-config.json") as f:
                     dziennikAccount = f.read()
                     if silent == False:
                         print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Global account loaded...")
+                        dziennik_log.debug("Global account loaded...")
                     return dziennikAccount
         elif dziennik_mode == "global":
             with open("db/acc-config.json") as f:
                 dziennikAccount = f.read()
                 if silent == False:
                     print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Global account loaded...")
+                    dziennik_log.debug("Global account loaded...")
                 return dziennikAccount
         elif dziennik_mode == "user":
             with open(f"db/{id}/acc-config.json") as f:
                 dziennikAccount = f.read()
                 if silent == False:
                     print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Account of {id} loaded...")
+                    dziennik_log.debug("Account of %s loaded...", id)
                 return dziennikAccount
         else: 
-            print("Dziennik mode uległ zmianie od momentu uruchomienia bota. Anulowanie funkcji")
+            temp = "Dziennik mode uległ zmianie od momentu uruchomienia bota. Anulowanie funkcji"
+            print(temp)
+            dziennik_log.error(temp)
             return False
 
     async def GetKeystore(id, silent=False):
@@ -275,28 +296,34 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
                     dziennikKeystore = f.read()
                     if silent == False:
                         print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Keystore of {id} loaded...")
+                        dziennik_log.debug("Keystore of %s loaded...", id)
                     return dziennikKeystore
             else:
                 with open("db/key-config.json") as f:
                     dziennikKeystore = f.read()
                     if silent == False:
                         print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Global keystore loaded...")
+                        dziennik_log.debug(f"Global keystore loaded...")
                     return dziennikKeystore
         elif dziennik_mode == "global":
             with open("db/key-config.json") as f:
                 dziennikKeystore = f.read()
                 if silent == False:
                     print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Global keystore loaded...")
+                    dziennik_log.debug(f"Global keystore loaded...")
                 return dziennikKeystore
         elif dziennik_mode == "user":
             with open(f"db/{id}/key-config.json") as f:
                 dziennikKeystore = f.read()
                 if silent == False:
                     print(f"[{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Keystore of {id} loaded...")
+                    dziennik_log.debug("Keystore of %s loaded...", id)
                 return dziennikKeystore
         else: 
             # await ErrorHandler.Report(DziennikSetup.bot, f"Dziennik mode uległ zmianie od momentu uruchomienia bota. Anulowanie funkcji.", "Dziennik Setup/GetKeystore", "170")
-            print("Dziennik mode uległ zmianie od momentu uruchomienia bota. Anulowanie funkcji")
+            temp = "Dziennik mode uległ zmianie od momentu uruchomienia bota. Anulowanie funkcji"
+            print(temp)
+            dziennik_log.error(temp)
             return False
                 
 def setup(bot):

@@ -1,9 +1,11 @@
-import discord, json, datetime, re
+import discord, json, datetime, re, sys
 from discord.ext import commands
 from datetime import timedelta
 from vulcan import Keystore, Account, Vulcan
 from tabulate import tabulate
 from cogs.dziennik.dziennik_setup import DziennikSetup
+from cogs.a_logging_handler import Logger
+dziennik_log = Logger.dziennik_log
 
 with open("config.json", "r") as config: 
     data = json.load(config)
@@ -51,8 +53,8 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
     @bot.command(aliases=['zadania_domowe', 'zadane', 'zadaniadomowe', 'zaddom', 'hw'])
     async def homework(self, ctx, data):
         lista_dni = ["dzisiaj", "obecny", "aktualny", "ten_tydzień", "ten_tydzien", "za_tydzień", "za_tydzien", "następny", "nastepny", "przyszły", "przyszly"]
-        regex = re.search(r'^([1-9]|0[1-9]|1[0-9]|2[0-9]|3[0-1])(\.|-|/)([1-9]|0[1-9]|1[0-2])(\.|-|/)([0-9][0-9]|20[0-9][0-9])$', data)
         if data not in lista_dni:
+            regex = re.search(r'^([1-9]|0[1-9]|1[0-9]|2[0-9]|3[0-1])(\.|-|/)([1-9]|0[1-9]|1[0-2])(\.|-|/)([0-9][0-9]|20[0-9][0-9])$', data)
             if regex == None:
                 embed=discord.Embed(description=help_description, color=0xdaa454, timestamp=ctx.message.created_at)
                 embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
@@ -65,8 +67,8 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
                 except:
                     data = datetime.datetime.strptime(str(regex.group(0)).replace(".", "/"), '%d/%m/%y')
             else:
-                print("Wystąpił błąd")
-                return
+                dziennik_log.error("Wystąpił błąd! [ZadaniaDomowe - %s]", sys._getframe().f_lineno)
+                return f"Wystąpił błąd! [ZadaniaDomowe - {sys._getframe().f_lineno}]"
         await ctx.reply(f'{await self.get_homework(ctx.author.id, data)}', mention_author=False)
 
     @homework.error
@@ -98,10 +100,12 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
 
         @discord.ui.button(label="Aktualny tydzień", style=discord.ButtonStyle.blurple)
         async def aktualny(self, button: discord.ui.Button, interaction: discord.Interaction):
+            dziennik_log.debug("Użytkownik {}#{} wybrał Zadania z aktualnego tygodnia.".format(interaction.user.name, interaction.user.discriminator))
             await interaction.response.send_message(f'Sprawdziany oraz Kartkówki: \n```{await ZadaniaDomowe.get_homework(ZadaniaDomowe, interaction.user.id, "aktualny")}```', ephemeral=True)
 
         @discord.ui.button(label="Przyszły tydzień", style=discord.ButtonStyle.blurple)
         async def przyszly(self, button: discord.ui.Button, interaction: discord.Interaction):
+            dziennik_log.debug("Użytkownik {}#{} wybrał Zadania z przyszłego tygodnia.".format(interaction.user.name, interaction.user.discriminator))
             await interaction.response.send_message(f'Sprawdziany oraz Kartkówki: \n```{await ZadaniaDomowe.get_homework(ZadaniaDomowe, interaction.user.id, "przyszły")}```', ephemeral=True)
         
         @discord.ui.button(label="Anuluj", style=discord.ButtonStyle.red)
@@ -195,11 +199,12 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
 |--------+-------------+---------|"""
         if tabela == x:
             print("Nie ma zadań domowych na wybrany tydzień.")
+            dziennik_log.debug("Nie ma zadań domowych na wybrany tydzień.")
             return "Nie ma zadań domowych na wybrany tydzień."
         else:
             print(tabela)
+            dziennik_log.debug(f"Wyświetlono zadania domowe z {first_day}-{last_day}.")
             return f"Zadania domowe z `{first_day.strftime('%d/%m/%Y')}` - `{last_day.strftime('%d/%m/%Y')}` ```\n{tabela}```"
 
 def setup(bot):
     bot.add_cog(ZadaniaDomowe(bot))
-    

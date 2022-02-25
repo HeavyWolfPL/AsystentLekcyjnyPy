@@ -1,9 +1,11 @@
-import discord, json, datetime, re
+import discord, json, datetime, re, sys
 from discord.ext import commands
 from datetime import timedelta
 from vulcan import Keystore, Account, Vulcan
 from tabulate import tabulate
 from cogs.dziennik.dziennik_setup import DziennikSetup
+from cogs.a_logging_handler import Logger
+dziennik_log = Logger.dziennik_log
 
 with open("config.json", "r") as config: 
     data = json.load(config)
@@ -41,8 +43,8 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
     @bot.command(aliases=['lekcje', 'planlekcji'])
     async def plan(self, ctx, data):
         lista_dni = ["dziś", "dzis", "dzisiaj", "jutro", "pojutrze", "wczoraj", "poniedzialek", "poniedziałek", "wtorek", "środa", "sroda", "czwartek", "piątek", "piatek"]
-        regex = re.search(r'^([1-9]|0[1-9]|1[0-9]|2[0-9]|3[0-1])(\.|-|/)([1-9]|0[1-9]|1[0-2])(\.|-|/)([0-9][0-9]|20[0-9][0-9])$', data)
         if data.lower() not in lista_dni:
+            regex = re.search(r'^([1-9]|0[1-9]|1[0-9]|2[0-9]|3[0-1])(\.|-|/)([1-9]|0[1-9]|1[0-2])(\.|-|/)([0-9][0-9]|20[0-9][0-9])$', data)
             if regex == None:
                 embed=discord.Embed(description=help_description, color=0xdaa454, timestamp=ctx.message.created_at)
                 embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
@@ -55,8 +57,8 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
                 except:
                     data = datetime.datetime.strptime(str(regex.group(0)).replace(".", "/"), '%d/%m/%y')
             else:
-                print("Wystąpił błąd")
-                return
+                dziennik_log.error("Wystąpił błąd! [PlanLekcji - %s]", sys._getframe().f_lineno)
+                return f"Wystąpił błąd! [PlanLekcji - {sys._getframe().f_lineno}]"
         description = """**Czy chcesz wysłać plan jako widoczny tylko dla ciebie?** \nKliknięcie opcji Tak, spowoduje ukrycie go tylko dla ciebie. \nKliknięcie opcji Nie, spowoduje wysłanie planu jako publicznego."""
         embed=discord.Embed(description=description, color=0xdaa454, timestamp=ctx.message.created_at)
         embed.set_author(name="Wirtualny Asystent Lekcyjny w Pythonie")
@@ -92,38 +94,47 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
 
         @discord.ui.button(label="Poniedziałek", style=discord.ButtonStyle.blurple)
         async def poniedzialek(self, button: discord.ui.Button, interaction: discord.Interaction):
+            dziennik_log.debug("Użytkownik wybrał plan lekcji z poniedziałku.")
             await interaction.response.send_message(f'{await PlanLekcji.get_plan_lekcji(PlanLekcji, interaction.user.id, "poniedziałek")}', ephemeral=True)
 
         @discord.ui.button(label="Wtorek", style=discord.ButtonStyle.blurple)
         async def wtorek(self, button: discord.ui.Button, interaction: discord.Interaction):
+            dziennik_log.debug("Użytkownik wybrał plan lekcji z wtorku.")
             await interaction.response.send_message(f'{await PlanLekcji.get_plan_lekcji(PlanLekcji, interaction.user.id, "wtorek")}', ephemeral=True)
 
         @discord.ui.button(label="Środa", style=discord.ButtonStyle.blurple)
         async def sroda(self, button: discord.ui.Button, interaction: discord.Interaction):
+            dziennik_log.debug("Użytkownik wybrał plan lekcji ze środy.")
             await interaction.response.send_message(f'{await PlanLekcji.get_plan_lekcji(PlanLekcji, interaction.user.id, "środa")}', ephemeral=True)
 
         @discord.ui.button(label="Czwartek", style=discord.ButtonStyle.blurple)
         async def czwartek(self, button: discord.ui.Button, interaction: discord.Interaction):
+            dziennik_log.debug("Użytkownik wybrał plan lekcji z czwartku.")
             await interaction.response.send_message(f'{await PlanLekcji.get_plan_lekcji(PlanLekcji, interaction.user.id, "czwartek")}', ephemeral=True)
 
         @discord.ui.button(label="Piątek", style=discord.ButtonStyle.blurple)
         async def piatek(self, button: discord.ui.Button, interaction: discord.Interaction):
+            dziennik_log.debug("Użytkownik wybrał plan lekcji z piątku.")
             await interaction.response.send_message(f'{await PlanLekcji.get_plan_lekcji(PlanLekcji, interaction.user.id, "piątek")}', ephemeral=True)
 
         @discord.ui.button(label="Wczoraj", style=discord.ButtonStyle.gray)
         async def wczoraj(self, button: discord.ui.Button, interaction: discord.Interaction):
+            dziennik_log.debug("Użytkownik wybrał plan lekcji z wczoraj.")
             await interaction.response.send_message(f'{await PlanLekcji.get_plan_lekcji(PlanLekcji, interaction.user.id, "wczoraj")}', ephemeral=True)
 
         @discord.ui.button(label="Dzisiaj", style=discord.ButtonStyle.gray)
         async def dzisiaj(self, button: discord.ui.Button, interaction: discord.Interaction):
+            dziennik_log.debug("Użytkownik wybrał dzisiejszy plan lekcji.")
             await interaction.response.send_message(f'{await PlanLekcji.get_plan_lekcji(PlanLekcji, interaction.user.id, "dzisiaj")}', ephemeral=True)
         
         @discord.ui.button(label="Jutro", style=discord.ButtonStyle.gray)
         async def jutro(self, button: discord.ui.Button, interaction: discord.Interaction):
+            dziennik_log.debug("Użytkownik wybrał jutrzejszy plan lekcji.")
             await interaction.response.send_message(f'{await PlanLekcji.get_plan_lekcji(PlanLekcji, interaction.user.id, "jutro")}', ephemeral=True)
 
         @discord.ui.button(label="Pojutrze", style=discord.ButtonStyle.gray)
         async def pojutrze(self, button: discord.ui.Button, interaction: discord.Interaction):
+            dziennik_log.debug("Użytkownik wybrał plan lekcji z pojutrza.")
             await interaction.response.send_message(f'{await PlanLekcji.get_plan_lekcji(PlanLekcji, interaction.user.id, "pojutrze")}', ephemeral=True)
         
         @discord.ui.button(label="Usuń", style=discord.ButtonStyle.red)
@@ -143,6 +154,7 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
         async def tak(self, button: discord.ui.Button, interaction: discord.Interaction):
             if self.ctx.author == interaction.user:
                 await interaction.message.delete()
+                dziennik_log.debug("Użytkownik {}#{} wybrał Plan w trybie RODO.".format(interaction.user.name, interaction.user.discriminator))
                 await interaction.response.send_message(f'{await PlanLekcji.get_plan_lekcji(PlanLekcji, interaction.user.id, self.date)}', ephemeral=True)
             else:
                 await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
@@ -151,6 +163,8 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
         @discord.ui.button(label="Nie", style=discord.ButtonStyle.gray)
         async def nie(self, button: discord.ui.Button, interaction: discord.Interaction):
             if self.ctx.author == interaction.user:
+                await interaction.message.delete()
+                dziennik_log.debug("Użytkownik {}#{} wybrał Plan w trybie Publicznym.".format(interaction.user.name, interaction.user.discriminator))
                 await interaction.response.send_message(f'{await PlanLekcji.get_plan_lekcji(PlanLekcji, interaction.user.id, self.date)}', ephemeral=False)
             else:
                 await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
@@ -248,9 +262,11 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
 |-------+-----------+-------------+--------|"""
         if tabela == x:
             print("Nie ma planu na wybrany dzień.")
+            dziennik_log.debug("Brak planu na wybrany dzień. [PlanLekcji - %s]", sys._getframe().f_lineno)
             return "Wybrany dzień nie posiada planu."
         else:
             print(tabela)
+            dziennik_log.debug(f"Wyświetlono plan lekcji z '{target_date}'.")
             return f"Plan lekcji z {target_date.strftime('%d/%m/%Y')}: ```\n{tabela}```"
 
 def setup(bot):

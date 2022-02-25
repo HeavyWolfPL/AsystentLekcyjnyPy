@@ -1,4 +1,5 @@
 # Vulcan
+from asyncio.windows_events import NULL
 from vulcan import Account
 from vulcan import Keystore
 from vulcan import Vulcan
@@ -12,6 +13,7 @@ from asyncio import sleep
 import datetime
 import os, json, time, logging
 from pathlib import Path
+from cogs.a_logging_handler import Logger
 
 ################
 ## Get config ##
@@ -25,8 +27,9 @@ with open("config.json", "r") as config:
     lessonStatus = data["dziennik_lessonStatus"]
     debug = data["debug"]
 
-if token == "TOKEN_GOES_HERE":
+if token in {"", None, "TOKEN_GOES_HERE"}:
     print("Ustaw token bota!")
+    Logger.dziennik_log.critical("Ustaw token bota!")
     exit()
 
 def __init__(self, bot):
@@ -47,19 +50,7 @@ bot.help_command = None
 ## Logging ##
 #############
 
-logs_dir = Path("./logs")
-if (logs_dir.exists() == False) or (logs_dir.is_dir() == False):
-    logs_dir.mkdir()
-logger = logging.getLogger('discord')
-if debug:
-    logger.setLevel(logging.DEBUG)
-else:
-    logger.setLevel(logging.INFO)
-now = datetime.datetime.now().strftime("%d-%m-%Y %H-%M-%S")
-handler = logging.FileHandler(filename=f"logs/{str(now)}.log", encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-logger.addHandler(handler)
-print("[Logging] Aktywne.")
+dziennik_log = Logger.dziennik_log
 
 ###############
 ## Load Cogs ##
@@ -70,10 +61,12 @@ if __name__ == '__main__':
         if filename.endswith(".py"):
             bot.load_extension(f"cogs.{filename[:-3]}")
             print(f"[Cogs] Loaded - {filename[:-3]}")
+            dziennik_log.debug(f"[Cogs] Loaded - {filename[:-3]}")
     for filename in os.listdir("cogs/dziennik"):
         if filename.endswith(".py"):
             bot.load_extension(f"cogs.dziennik.{filename[:-3]}")
             print(f"[Dziennik Cogs] Loaded - {filename[:-3]}")
+            dziennik_log.debug(f"[Dziennik Cogs] Loaded - {filename[:-3]}")
 
 ######################
 ## Config validator ##
@@ -86,11 +79,17 @@ async def config_validator():
         api_name = data["api_name"]
     msg = ""
     if debug not in [True, False]:
-        msg += "\n[Validator Konfigu] Debug musi mieć wartość true lub false!"
+        context = "[Validator Konfigu] Debug musi mieć wartość true lub false!"
+        dziennik_log.error(context)
+        msg += f"\n{context}"
     if len(api_name) > 24:
-        msg += "\n[Validator Konfigu] Nazwa API jest za długa!"
+        context = "[Validator Konfigu] Nazwa API jest za długa!"
+        dziennik_log.error(context)
+        msg += f"\n{context}"
     if dziennik_mode not in ["user", "global", "both"]:
-        msg += "\n[Validator Konfigu] Konfig zawiera nieodpowiedni `dziennik_mode`. Wybierz jeden z trzech dostępnych: \n- user (każdy użytkownik musi dodać swoje tokeny) \n- global (administrator bota dodaje swój token) \n- both (gdy użytkownik nie posiada dodanego własnego tokenu, użyje tokenu administratora*)\n\n* Obowiązują ograniczenia co do komend.\n"    
+        context = "[Validator Konfigu] Konfig zawiera nieodpowiedni `dziennik_mode`. Wybierz jeden z trzech dostępnych: \n- user (każdy użytkownik musi dodać swoje tokeny) \n- global (administrator bota dodaje swój token) \n- both (gdy użytkownik nie posiada dodanego własnego tokenu, użyje tokenu administratora*)\n\n* Obowiązują ograniczenia co do komend.\n"    
+        dziennik_log.error(context)
+        msg += f"\n{context}"
     return msg
     
 @loop(seconds=60)
@@ -99,6 +98,7 @@ async def lesson_status():
         dziennikKeystore = Keystore.load(await DziennikSetup.GetKeystore(owner_id, True))
         dziennikAccount = Account.load(await DziennikSetup.GetAccount(owner_id, True))
     except FileNotFoundError:
+        dziennik_log.warning("[Dziennik Status Lekcji] Nie znaleziono danych dla globalnego konta dziennika! Upewnij sie, ze owner_id jest prawidlowe oraz jest ustawiony globalny klucz.")
         return f"[Dziennik Status Lekcji] Nie znaleziono danych dla globalnego konta dziennika! Upewnij sie, ze owner_id jest prawidlowe oraz jest ustawiony globalny klucz."
     dziennikClient = Vulcan(dziennikKeystore, dziennikAccount)
     await dziennikClient.select_student()
@@ -155,12 +155,14 @@ Bot by Wafelowski.dev""")
     x = await config_validator()
     if (x == ""):
         print("[Validator Konfigu] Brak błędów.")
+        dziennik_log.info("[Validator Konfigu] Brak błędów.")
     else:
         print(x)
         # await ErrorHandler.Report(bot, f"Konfig zawiera nieodpowiedni `dziennik_mode`. Wybierz jeden z trzech dostępnych: \n- user (każdy użytkownik musi dodać swoje tokeny) \n- global (administrator bota dodaje swój token) \n- both (gdy użytkownik nie posiada dodanego własnego tokenu, użyje tokenu administratora*)\n\n* Obowiązują ograniczenia co do komend.", "Validator Konfigu", "69")
         exit()
     if lessonStatus == True:
         print("[Dziennik] Status Aktywny")
+        dziennik_log.info("[Dziennik] Status Aktywny")
         lesson_status.start()
 
     
@@ -198,6 +200,7 @@ async def on_command_error(ctx, error):
 ##################
 ## Bot commands ##
 ##################
+import sys
 
 @bot.command()
 async def ping(ctx):
