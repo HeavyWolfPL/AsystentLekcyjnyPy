@@ -1,6 +1,5 @@
 import discord, json, datetime, re, sys
 from discord.ext import commands
-from datetime import timedelta
 from vulcan import Keystore, Account, Vulcan
 from tabulate import tabulate
 from cogs.dziennik.dziennik_setup import DziennikSetup
@@ -177,17 +176,40 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
                 await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
 
 
+    async def get_zastepstwa(self, id, date, lesson):
+        try:
+            dziennikKeystore = Keystore.load(await DziennikSetup.GetKeystore(id))
+            dziennikAccount = Account.load(await DziennikSetup.GetAccount(id))
+        except FileNotFoundError:
+            return f"<@{id}>, nie znaleziono danych twojego konta."
+        dziennikClient = Vulcan(dziennikKeystore, dziennikAccount)
+
+        await dziennikClient.select_student()
+
+        changed_lessons = await dziennikClient.data.get_changed_lessons(date_from=date)
+        tmp = []
+
+        async for changed_lesson in changed_lessons:
+            tmp.append(changed_lesson)
+        changed_lessons = tmp
+
+        await dziennikClient.close()
+
+        for changed_lesson in changed_lessons:
+            if changed_lesson.changes.id == lesson.changes.id:
+                return changed_lesson
+
+
     async def get_plan_lekcji(self, id, date):
-        MY_GROUP = None
 
         if date in ["dzisiaj", "dziś", "dzis", "teraz"]:
             target_date = datetime.datetime.now()
         elif date == "jutro":
-            target_date = datetime.datetime.now() + timedelta(days=1)
+            target_date = datetime.datetime.now() + datetime.timedelta(days=1)
         elif date == "pojutrze":
-            target_date = datetime.datetime.now() + timedelta(days=2)
+            target_date = datetime.datetime.now() + datetime.timedelta(days=2)
         elif date == "wczoraj":
-            target_date = datetime.datetime.now() - timedelta(days=1)
+            target_date = datetime.datetime.now() - datetime.timedelta(days=1)
         elif date in ["poniedzialek", "poniedziałek"]:
             today = datetime.date.today()
             target_date = today + datetime.timedelta( (0-today.weekday()) % 7 )
@@ -227,35 +249,82 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
         rows = []
         headers = ["Lp.", "Od - Do", "Przedmiot", "Sala"]
         all_info = {}
+        zastepstwa = ""
 
         for lesson in lessons:
+            
+            if (lesson.changes != None) and (lesson.changes.type == 1):
+                if zastepstwa == "":
+                    zastepstwa = "**Zmiany w planie**: "
+
+                if lesson.group and lesson.group.name != "Religia":
+                    name = lesson.subject.name + ' (' + lesson.group.name + ')'
+                else:
+                    name = lesson.subject.name
+
+                zastepstwa = zastepstwa + f" \n • ~~{name} | {lesson.time.displayed_time.split('-')[0]} - {lesson.time.displayed_time.split('-')[1]}~~"
+                dziennik_log.debug(f"Lekcja '{lesson.subject.code}' pominięta - Okienko.")
+                continue # If lesson is canceled, remove it from the list
             if lesson.visible:
                 all_info[lesson.time.position] = [lesson]
 
         for key in sorted(all_info):
+            lesson = all_info[key][0]
+
+            if lesson.changes != None:
+                changed_lesson = await PlanLekcji.get_zastepstwa(PlanLekcji, id, target_date, lesson)
+            else:
+                changed_lesson = None
+                
             try:
-                sala = all_info[key][0].room.code
+                sala = lesson.room.code
             except:
                 sala = "N/A"
 
-            lesson = all_info[key][0]
-
+            
             if lesson.subject:
                 name = lesson.subject.name
                 if len(name) > 16:
                     name = lesson.subject.code
-                else:
-                    name = lesson.subject.name
             elif lesson.event:
                 name = lesson.event
             else:
                 name = 'NO_INFO'
 
-            if not MY_GROUP:
-                if all_info[key][0].group:
-                    name = name + ' (' + all_info[key][0].group.name + ')'
+            if all_info[key][0].group:
+                name = name + ' (' + all_info[key][0].group.name + ')'
+
+            time = lesson.time.displayed_time.split("-")[0] + " - " + lesson.time.displayed_time.split("-")[1]
+            position = str(lesson.time.position)
                 
-            rows.append([str(lesson.time.position), lesson.time.displayed_time.split("-")[0] + " - " + lesson.time.displayed_time.split("-")[1], name, sala])
+
+            if changed_lesson != None:
+                if zastepstwa == "":
+                    zastepstwa = "**Zmiany w planie**: "
+                zastepstwa = zastepstwa + " \n •"
+
+                if changed_lesson.subject != None:
+                    zastepstwa = zastepstwa + f" {name} **>** {changed_lesson.subject.name}"
+                    name = changed_lesson.subject.name + " (!)"
+                    if len(name) > 16:
+                        name = changed_lesson.subject.code + " (!)"
+                else:
+                    zastepstwa = zastepstwa + f" {name}"
+
+                if changed_lesson.room != None:
+                    zastepstwa = zastepstwa + f" ({sala} **>** {changed_lesson.room.code})"
+                    sala = changed_lesson.room.code + " (!)"
+                else:
+                    zastepstwa = zastepstwa + f" ({sala})"
+
+                if changed_lesson.time != None:
+                    zastepstwa = zastepstwa + f" | {time} **>** {changed_lesson.time.displayed_time.split('-')[0]} - {changed_lesson.time.displayed_time.split('-')[1]}"
+                    time = changed_lesson.time.displayed_time.split("-")[0] + " - " + changed_lesson.time.displayed_time.split("-")[1]
+                    position = str(changed_lesson.time.position) + " (!)"
+                else:
+                    zastepstwa = zastepstwa + f" [{time}]"
+                
+            rows.append([position, time, name, sala])
 
         tabela = tabulate(rows, headers, tablefmt="orgtbl", stralign="center")
         x = """|  Lp.  |  Od - Do  |  Przedmiot  |  Sala  |
@@ -267,7 +336,7 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
         else:
             print(tabela)
             dziennik_log.debug(f"Wyświetlono plan lekcji z '{target_date}'.")
-            return f"Plan lekcji z {target_date.strftime('%d/%m/%Y')}: ```\n{tabela}```"
+            return f"Plan lekcji z {target_date.strftime('%d/%m/%Y')}: ```\n{tabela}```\n{zastepstwa}"
 
 def setup(bot):
     bot.add_cog(PlanLekcji(bot))
