@@ -1,5 +1,4 @@
 # Vulcan
-from asyncio.windows_events import NULL
 from vulcan import Account
 from vulcan import Keystore
 from vulcan import Vulcan
@@ -11,8 +10,7 @@ from discord.ext.tasks import loop
 from asyncio import sleep
 # Other
 import datetime
-import os, json, time, logging
-from pathlib import Path
+import os, json, time
 from cogs.a_logging_handler import Logger
 
 ################
