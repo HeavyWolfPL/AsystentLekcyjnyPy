@@ -131,6 +131,9 @@ async def lesson_status():
             else:
                 przedmiot = lesson.subject.name
             await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=przedmiot))
+            if (lesson.changes != None) and (lesson.changes.type == 1):
+                lessonFound = False
+                break
             lessonFound = True
             break
     
