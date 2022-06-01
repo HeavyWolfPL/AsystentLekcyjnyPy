@@ -1,47 +1,46 @@
-import json
-import re
+import discord, json, re, logging
 from discord.ext import commands
-from vulcan import Vulcan
-from vulcan import Account
-from vulcan import Keystore
+from vulcan import Vulcan, Account, Keystore
+from cogs.dziennik.dziennik_setup import DziennikSetup
+from cogs.a_logging_handler import Logger
+dziennik_log = Logger.dziennik_log
 
 with open("config.json", "r") as config: 
     data = json.load(config)
     prefix = data["prefix"]
-    dziennik_enabled = data["dziennik_enabled"]
 
 class Numerek(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, intents):
         self.bot = bot
-
-    bot = commands.Bot(command_prefix=prefix)
+        
+    intents = discord.Intents.all()
+    bot = commands.Bot(command_prefix=prefix, intents=intents, help_command=None)
 
     @bot.command(aliases=["numerek", "szczęśliwynumerek", "szczesliwynumerek", "luckynumber"])
     async def numer(self, ctx):
-        if not dziennik_enabled:
-            await ctx.reply("Moduł dziennika jest wyłączony!", mention_author=False)
-            return
-        await ctx.channel.send(f'Szczęśliwy Numerek: `{await self.get_luckynumber()}`')
+        await ctx.channel.send(f'{await self.get_luckynumber()}')
 
     async def get_luckynumber(self):
-        with open("key-config.json") as f:
-            # load from a JSON string
-            dziennikKeystore = Keystore.load(f.read())
-        with open("acc-config.json") as f:
-            # load from a JSON string
-            dziennikAccount = Account.load(f.read())
+        try:
+            dziennikKeystore = Keystore.load(await DziennikSetup.GetKeystore(id))
+            dziennikAccount = Account.load(await DziennikSetup.GetAccount(id))
+        except FileNotFoundError:
+            return f"<@{id}>, nie znaleziono danych twojego konta."
         dziennikClient = Vulcan(dziennikKeystore, dziennikAccount)
+        
         await dziennikClient.select_student()  # select the first available student
-        print(dziennikClient.student)  # print the selected student 
         lucky_number = await dziennikClient.data.get_lucky_number()
         await dziennikClient.close()
-        #print(f'{str(lucky_number)}')
+        
         number = re.search('number=(.+?)\)', str(lucky_number))
         if number:
             lucky_number = number.group(1)
         if lucky_number == "0":
             lucky_number = "Brak"
-        return lucky_number
+        dziennik_log.debug("Numerek to: " + lucky_number)
+        return f"Szczęśliwy Numerek: `{lucky_number}`"
 
-def setup(bot):
-    bot.add_cog(Numerek(bot))
+async def setup(bot):
+    intents = discord.Intents.default()
+    intents.members = True
+    await bot.add_cog(Numerek(bot, intents=intents))

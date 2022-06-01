@@ -6,30 +6,29 @@
 	"prefix": "!",
 	"token": "TOKEN_GOES_HERE",
 	"ownerID": "YOUR_ID",
-	"debug": "false",
+	"errorChannel": "CHANNEL_ID_GOES_HERE",
+	"debug": false,
 
 	"_Separator3_": 	"---------------------------",
 	"_DziennikConfig_": "-----Dziennik Settings-----",
 	"_Separator4_": 	"---------------------------",
-	
-	"dziennik_enabled": true,
-	"dziennikToken": "TOKEN_GOES_HERE",
-	"dziennikSymbol": "SYMBOL_GOES_HERE",
-	"dziennikPIN": "PIN_GOES_HERE",
-
+	"_DziennikModes_":  "------Dziennik Modes-------",
+	"_Dziennik1_": 		"-----------both------------",
+	"_Dziennik2_": 		"----------global-----------",
+	"_Dziennik3_":		"-----------user------------",
 	"_Separator5_": 	"---------------------------",
-	"_Embeds_": 		"-------Embed Settings------",
-	"_Separator6_": 	"---------------------------",
+	
+	"dziennik_mode": "global / user / both",
+	"api_name": "Nazwa API",
+	"RODO": true,
+	"dziennik_lessonStatus": true,
 
-	"authorImage": "https://i.imgur.com/g3a3tLo.png",
+	"_Separator6_": 	"---------------------------",
+	"_Embeds_": 		"-------Embed Settings------",
+	"_Separator7_": 	"---------------------------",
+
 	"footerCopyright": "Wafelowski.dev",
 	"footerCopyrightImage": "https://i.imgur.com/g3a3tLo.png",
-
-
-	"_Separator7_": 	"---------------------------",
-	"_LeaveIt_": 		"---------Do not touch------",
-	"_Separator8_": 	"---------------------------",
-
 
 	"_Separator98_": 	"---------------------------",
 	"_Wafel_": 			"-------Wafelowski.dev------",
