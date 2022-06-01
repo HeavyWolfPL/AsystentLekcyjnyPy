@@ -10,7 +10,7 @@ from discord.ext.tasks import loop
 from asyncio import sleep
 # Other
 import datetime
-import os, json, time
+import os, json, time, asyncio
 from cogs.a_logging_handler import Logger
 
 ################
@@ -30,19 +30,23 @@ if token in {"", None, "TOKEN_GOES_HERE"}:
     Logger.dziennik_log.critical("Ustaw token bota!")
     exit()
 
-def __init__(self, bot):
-    self.bot = bot
-    self._last_member = None
-
 
 #############
 ## The Bot ##
 #############
 
+def __init__(self, bot):
+    self.bot = bot
+    self._last_member = None
+    self.intents = discord.Intents.default()
+    self.intents.members = True
+
 intents = discord.Intents.default()
 intents.members = True
-bot = commands.Bot(command_prefix=str(prefix), intents = intents)
-bot.help_command = None
+intents.message_content = True
+
+bot = commands.Bot(command_prefix=prefix, intents=intents, help_command=None)
+
 
 #############
 ## Logging ##
@@ -54,7 +58,7 @@ dziennik_log = Logger.dziennik_log
 ## Load Cogs ##
 ############### 
 
-if __name__ == '__main__':
+async def LoadCogs():
     for filename in os.listdir("cogs"):
         if filename.endswith(".py"):
             bot.load_extension(f"cogs.{filename[:-3]}")
@@ -65,6 +69,9 @@ if __name__ == '__main__':
             bot.load_extension(f"cogs.dziennik.{filename[:-3]}")
             print(f"[Dziennik Cogs] Loaded - {filename[:-3]}")
             dziennik_log.debug(f"[Dziennik Cogs] Loaded - {filename[:-3]}")
+
+if __name__ == '__main__':
+    asyncio.run(LoadCogs())
 
 ######################
 ## Config validator ##
@@ -238,4 +245,8 @@ async def reload_error(ctx, error):
     else:
         await ctx.send(f"**Wystąpił błąd!** Treść: \n```{error}```")
 
-bot.run(token)
+async def main():
+    async with bot:
+        await bot.start(token)
+
+asyncio.run(main())
