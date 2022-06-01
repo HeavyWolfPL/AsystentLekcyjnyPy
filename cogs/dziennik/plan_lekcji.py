@@ -34,10 +34,11 @@ Możesz również wpisać komendę od nowa, jeśli potrzebujesz plan z danego dn
 ```"""
 
 class PlanLekcji(commands.Cog, name='Plan Lekcji'):
-    def __init__(self, bot):
+    def __init__(self, bot, intents):
         self.bot = bot
-
-    bot = commands.Bot(command_prefix=prefix)
+        
+    intents = discord.Intents.all()
+    bot = commands.Bot(command_prefix=prefix, intents=intents, help_command=None)
 
     @bot.command(aliases=['lekcje', 'planlekcji'])
     async def plan(self, ctx, data):
@@ -299,6 +300,16 @@ class PlanLekcji(commands.Cog, name='Plan Lekcji'):
                 
 
             if changed_lesson != None:
+
+                # Plan on handling lessons moved to different days:
+                # 1. Get lesson changes from entire week
+                # 2. Check the change_date attribute of the changes
+                # 3. Compare it to the current day
+                # 4. Profit?
+                # Note: Lesson is not visible in change_date day.
+                # Example: 24.03.2022
+                print(changed_lesson)
+                print(lesson)
                 if zastepstwa == "":
                     zastepstwa = "**Zmiany w planie**: "
                 zastepstwa = zastepstwa + " \n •"

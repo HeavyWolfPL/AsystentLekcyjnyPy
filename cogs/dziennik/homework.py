@@ -45,10 +45,11 @@ W przypadku daty wystarczy, że podasz dowolny dzień wybranego tygodnia.
 ```"""
 
 class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
-    def __init__(self, bot):
+    def __init__(self, bot, intents):
         self.bot = bot
-
-    bot = commands.Bot(command_prefix=prefix)
+        
+    intents = discord.Intents.all()
+    bot = commands.Bot(command_prefix=prefix, intents=intents, help_command=None)
 
     @bot.command(aliases=['zadania_domowe', 'zadane', 'zadaniadomowe', 'zaddom', 'hw'])
     async def homework(self, ctx, data):

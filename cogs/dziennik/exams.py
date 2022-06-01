@@ -46,10 +46,11 @@ W przypadku daty wystarczy, że podasz dowolny dzień wybranego tygodnia.
 ```"""
 
 class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
-    def __init__(self, bot):
+    def __init__(self, bot, intents):
         self.bot = bot
-
-    bot = commands.Bot(command_prefix=prefix)
+        
+    intents = discord.Intents.all()
+    bot = commands.Bot(command_prefix=prefix, intents=intents, help_command=None)
 
     @bot.command(aliases=['tests', 'sprawdziany', 'spr', 'kartkówki', "kartkowki", 'kartk'])
     async def testy(self, ctx, data):

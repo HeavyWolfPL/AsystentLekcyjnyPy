@@ -10,10 +10,11 @@ with open("config.json", "r") as config:
     prefix = data["prefix"]
 
 class Numerek(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, intents):
         self.bot = bot
-
-    bot = commands.Bot(command_prefix=prefix)
+        
+    intents = discord.Intents.all()
+    bot = commands.Bot(command_prefix=prefix, intents=intents, help_command=None)
 
     @bot.command(aliases=["numerek", "szczęśliwynumerek", "szczesliwynumerek", "luckynumber"])
     async def numer(self, ctx):

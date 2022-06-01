@@ -15,10 +15,11 @@ with open("config.json", "r") as config:
     footer_img = data['footerCopyrightImage']
 
 class DziennikSetup(commands.Cog, name='Ustawienia'):
-    def __init__(self, bot):
-        self.bot = bot 
-
-    bot = commands.Bot(command_prefix=prefix)
+    def __init__(self, bot, intents):
+        self.bot = bot
+        
+    intents = discord.Intents.all()
+    bot = commands.Bot(command_prefix=prefix, intents=intents, help_command=None)
 
     if dziennik_mode == "both":
         @bot.command(name='setup')

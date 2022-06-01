@@ -10,17 +10,17 @@ with open("config.json", "r") as config:
     footer_img = data["footerCopyrightImage"]
     dziennik_mode = data["dziennik_mode"]
 
-bot = commands.Bot(command_prefix=prefix)
-bot.help_command = None
-
 lista_cogów = ["frekwencja", "ustawienia", "kartkówki i sprawdziany", "kartkówki i sprawdziany", "oceny", "zadania domowe", "numerek", "plan Lekcji", "pozostałe", "pozostale"]
 
 lista_komend = ["daty", "data", "dni", "tygodnie", "help", "komendy", "pomoc", "cmds", "frekwencja", "obecność", "obecnosc", "ob", "obecny", "nieobecności", "nieobecnosci", "setup", "testy", "tests", "sprawdziany", "spr", "kartkówki", "kartkowki", "kartk", "grades", "oceny", "grade", "ocena", "homework", "zadania_domowe", "zadane", "zadaniadomowe", "zaddom", "hw", "numer", "numerek", "szczęśliwynumerek", "szczesliwynumerek", "luckynumber", "plan", "lekcje", "planlekcji"]
 
 
 class BotInfo(commands.Cog, name="Pozostałe"):
-    def __init__(self, bot):
+    def __init__(self, bot, intents):
         self.bot = bot
+        
+    intents = discord.Intents.all()
+    bot = commands.Bot(command_prefix=prefix, intents=intents, help_command=None)
 
     @bot.command(aliases=["komendy", "pomoc", "cmds"])
     async def help(self, ctx, komenda):

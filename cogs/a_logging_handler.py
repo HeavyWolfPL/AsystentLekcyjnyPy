@@ -8,10 +8,11 @@ with open("config.json", "r") as config:
     debug = data["debug"]
 
 class ErrorHandler(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, intents):
         self.bot = bot
-
-    bot = commands.Bot(command_prefix=prefix)
+        
+    intents = discord.Intents.all()
+    bot = commands.Bot(command_prefix=prefix, intents=intents, help_command=None)
 
     # async def Report(self, error, cog, line):
     #     with open("config.json", "r") as config: 
@@ -28,10 +29,11 @@ class ErrorHandler(commands.Cog):
     #     print(f"[ErrorHandler - {cog} ({line})] Wystąpił błąd: {error}")
 
 class Logger(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, intents):
         self.bot = bot
-
-    bot = commands.Bot(command_prefix=prefix)
+        
+    intents = discord.Intents.all()
+    bot = commands.Bot(command_prefix=prefix, intents=intents, help_command=None)
 
     logs_dir = Path("./logs")
     if (logs_dir.exists() == False) or (logs_dir.is_dir() == False):

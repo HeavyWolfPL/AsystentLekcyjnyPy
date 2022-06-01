@@ -16,10 +16,11 @@ with open("config.json", "r") as config:
     footer_img = data["footerCopyrightImage"]
 
 class Oceny(commands.Cog, name='Oceny'):
-    def __init__(self, bot):
+    def __init__(self, bot, intents):
         self.bot = bot
-
-    bot = commands.Bot(command_prefix=prefix)
+        
+    intents = discord.Intents.all()
+    bot = commands.Bot(command_prefix=prefix, intents=intents, help_command=None)
 
     @bot.command(aliases=['oceny'])
     async def grades(self, ctx):

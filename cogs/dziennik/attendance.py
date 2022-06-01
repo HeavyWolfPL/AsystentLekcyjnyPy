@@ -47,10 +47,11 @@ Aliasy:
 ```"""
 
 class Frekwencja(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, intents):
         self.bot = bot
-
-    bot = commands.Bot(command_prefix=prefix)
+        
+    intents = discord.Intents.all()
+    bot = commands.Bot(command_prefix=prefix, intents=intents, help_command=None)
 
     @bot.command(aliases=['obecność', 'obecnosc', 'ob', 'obecny', 'nieobecności', 'nieobecnosci'])
     async def frekwencja(self, ctx, data):
