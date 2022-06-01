@@ -4,10 +4,41 @@ Bot łączący się z API dziennika Vulcan UONET+ uzyskując w ten sposób róż
 
 ## Instalacja
 ### **Wymagania**
-- [Python 3.8.10+](https://www.python.org/downloads/release/python-378/)
+- [Python 3.8.10+](https://www.python.org/downloads/release/python-3810/)
 - [Discord.py 2.0.0a+](https://github.com/Rapptz/discord.py/)
 - [Tabulate](https://pypi.org/project/tabulate/)
 - [Vulcan-API](https://github.com/kapi2289/vulcan-api)
+- Pozostałe pakiety
+<details>
+<summary>Pakiety</summary>
+aenum==3.1.11
+aiodns==3.0.0
+aiohttp==3.8.1
+aiosignal==1.2.0
+async-timeout==4.0.2
+attrs==21.4.0
+cchardet==2.1.7
+cffi==1.15.0
+charset-normalizer==2.0.12
+cryptography==37.0.2
+discord.py @ git+https://github.com/Rapptz/discord.py@348764583d95265f40b8a683e2f8ac73d6c173f5
+frozenlist==1.3.0
+future==0.18.2
+idna==3.3
+multidict==6.0.2
+pycares==4.1.2
+pycparser==2.21
+pyOpenSSL==22.0.0
+python-dateutil==2.8.2
+pytz==2022.1
+PyYAML==6.0
+related==0.7.2
+six==1.16.0
+tabulate==0.8.9
+uonet-request-signer-hebe==0.1.1
+vulcan-api==2.1.1
+yarl==1.7.2
+</details>
 
 ### **Tokeny**
 Skopiuj plik config-example.json, wklej tam poprawne tokeny, a następnie zmień jego nazwę na `config.json`
