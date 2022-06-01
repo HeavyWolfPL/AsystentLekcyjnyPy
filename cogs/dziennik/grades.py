@@ -186,6 +186,8 @@ class Oceny(commands.Cog, name='Oceny'):
         print(table)
         return f"```{table}```"
 
-def setup(bot):
-    bot.add_cog(Oceny(bot))
+async def setup(bot):
+    intents = discord.Intents.default()
+    intents.members = True
+    await bot.add_cog(Oceny(bot, intents=intents))
     

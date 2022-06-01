@@ -100,21 +100,23 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
         # link/url = 5
 
         @discord.ui.button(label="Aktualny tydzień", style=discord.ButtonStyle.blurple)
-        async def aktualny(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def aktualny(self, interaction: discord.Interaction, button: discord.ui.Button):
+            await interaction.response.defer()
             dziennik_log.debug("Użytkownik {}#{} wybrał Zadania z aktualnego tygodnia.".format(interaction.user.name, interaction.user.discriminator))
-            await interaction.response.send_message(f'Sprawdziany oraz Kartkówki: \n```{await ZadaniaDomowe.get_homework(ZadaniaDomowe, interaction.user.id, "aktualny")}```', ephemeral=True)
+            await interaction.followup.send(f'Sprawdziany oraz Kartkówki: \n```{await ZadaniaDomowe.get_homework(ZadaniaDomowe, interaction.user.id, "aktualny")}```', ephemeral=True)
 
         @discord.ui.button(label="Przyszły tydzień", style=discord.ButtonStyle.blurple)
-        async def przyszly(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def przyszly(self, interaction: discord.Interaction, button: discord.ui.Button):
+            await interaction.response.defer()
             dziennik_log.debug("Użytkownik {}#{} wybrał Zadania z przyszłego tygodnia.".format(interaction.user.name, interaction.user.discriminator))
-            await interaction.response.send_message(f'Sprawdziany oraz Kartkówki: \n```{await ZadaniaDomowe.get_homework(ZadaniaDomowe, interaction.user.id, "przyszły")}```', ephemeral=True)
+            await interaction.followup.send(f'Sprawdziany oraz Kartkówki: \n```{await ZadaniaDomowe.get_homework(ZadaniaDomowe, interaction.user.id, "przyszły")}```', ephemeral=True)
         
         @discord.ui.button(label="Anuluj", style=discord.ButtonStyle.red)
-        async def delete(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def delete(self, interaction: discord.Interaction, button: discord.ui.Button):
             if self.ctx.author == interaction.user:
                 await interaction.message.delete()
             else:
-                await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
+                await interaction.followup.send('Brak uprawnień!', ephemeral=True)
     
     async def get_homework(self, id, date):
         today = datetime.datetime.today()
@@ -207,5 +209,7 @@ class ZadaniaDomowe(commands.Cog, name='Zadania domowe'):
             dziennik_log.debug(f"Wyświetlono zadania domowe z {first_day}-{last_day}.")
             return f"Zadania domowe z `{first_day.strftime('%d/%m/%Y')}` - `{last_day.strftime('%d/%m/%Y')}` ```\n{tabela}```"
 
-def setup(bot):
-    bot.add_cog(ZadaniaDomowe(bot))
+async def setup(bot):
+    intents = discord.Intents.default()
+    intents.members = True
+    await bot.add_cog(ZadaniaDomowe(bot, intents=intents))

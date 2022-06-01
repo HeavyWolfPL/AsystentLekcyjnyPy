@@ -141,22 +141,23 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
             self.mode = mode
 
         @discord.ui.button(label="Tak", style=discord.ButtonStyle.green)
-        async def tak(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def tak(self, interaction: discord.Interaction, button: discord.ui.Button):
             if self.ctx.author == interaction.user:
+                await interaction.response.defer()
                 await interaction.message.delete()
                 dziennik_log.info("Użytkownik %s#%s (%s) potwierdził usunięcie konta %s.", self.ctx.author.name, self.ctx.author.discriminator, self.ctx.author.id, self.mode)
-                await interaction.response.send_message(f'{await DziennikSetup.DeleteAccount(DziennikSetup, interaction.user.id, self.mode)}', ephemeral=True)
+                await interaction.followup.send(f'{await DziennikSetup.DeleteAccount(DziennikSetup, interaction.user.id, self.mode)}', ephemeral=True)
             else:
-                await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
+                await interaction.followup.send('Brak uprawnień!', ephemeral=True)
         
         @discord.ui.button(label="Nie", style=discord.ButtonStyle.red)
-        async def delete(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def delete(self, interaction: discord.Interaction, button: discord.ui.Button):
             if self.ctx.author == interaction.user:
                 await self.ctx.message.delete()
                 dziennik_log.debug("Użytkownik %s#%s (%s) anulował usunięcie konta %s.", self.ctx.author.name, self.ctx.author.discriminator, self.ctx.author.id, self.mode)
                 await interaction.message.delete()
             else:
-                await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
+                await interaction.followup.send('Brak uprawnień!', ephemeral=True)
 
     class SelectConfirm_Button(discord.ui.View):
         def __init__(self, ctx):
@@ -164,31 +165,33 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
             self.ctx = ctx
 
         @discord.ui.button(label="Globalne", style=discord.ButtonStyle.blurple)
-        async def globalne(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def globalne(self, interaction: discord.Interaction, button: discord.ui.Button):
             if self.ctx.author == interaction.user:
+                await interaction.response.defer()
                 await interaction.message.delete()
                 dziennik_log.info("Użytkownik %s#%s (%s) potwierdził usunięcie globalnego konta.", self.ctx.author.name, self.ctx.author.discriminator, self.ctx.author.id)
-                await interaction.response.send_message(f'{await DziennikSetup.DeleteAccount(DziennikSetup, interaction.user.id, "global")}', ephemeral=True)
+                await interaction.followup.send(f'{await DziennikSetup.DeleteAccount(DziennikSetup, interaction.user.id, "global")}', ephemeral=True)
             else:
-                await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
+                await interaction.followup.send('Brak uprawnień!', ephemeral=True)
         
         @discord.ui.button(label="Użytkownika", style=discord.ButtonStyle.gray)
-        async def uzytkownika(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def uzytkownika(self, interaction: discord.Interaction, button: discord.ui.Button):
             if self.ctx.author == interaction.user:
+                await interaction.response.defer()
                 await interaction.message.delete()
                 dziennik_log.info("Użytkownik %s#%s (%s) potwierdził usunięcie konta użutkownika.", self.ctx.author.name, self.ctx.author.discriminator, self.ctx.author.id)
-                await interaction.response.send_message(f'{await DziennikSetup.DeleteAccount(DziennikSetup, interaction.user.id, "user")}', ephemeral=True)
+                await interaction.followup.send(f'{await DziennikSetup.DeleteAccount(DziennikSetup, interaction.user.id, "user")}', ephemeral=True)
             else:
-                await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
+                await interaction.followup.send('Brak uprawnień!', ephemeral=True)
         
         @discord.ui.button(label="Anuluj", style=discord.ButtonStyle.red)
-        async def delete(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def delete(self, interaction: discord.Interaction, button: discord.ui.Button):
             if self.ctx.author == interaction.user:
                 await self.ctx.message.delete()
                 dziennik_log.debug("Użytkownik %s#%s (%s) anulował usunięcie konta %s.", self.ctx.author.name, self.ctx.author.discriminator, self.ctx.author.id, self.mode)
                 await interaction.message.delete()
             else:
-                await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
+                await interaction.followup.send('Brak uprawnień!', ephemeral=True)
 
     async def DeleteAccount(self, id, mode):
         if mode == "global":
@@ -327,5 +330,7 @@ class DziennikSetup(commands.Cog, name='Ustawienia'):
             dziennik_log.error(temp)
             return False
                 
-def setup(bot):
-    bot.add_cog(DziennikSetup(bot))
+async def setup(bot):
+    intents = discord.Intents.default()
+    intents.members = True
+    await bot.add_cog(DziennikSetup(bot, intents=intents))

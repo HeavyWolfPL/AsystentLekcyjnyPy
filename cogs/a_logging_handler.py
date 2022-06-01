@@ -65,6 +65,8 @@ class Logger(commands.Cog):
     print("[Logging] Aktywne.")
     dziennik_log.info("[Logging] Aktywne.")
 
-def setup(bot):
-    bot.add_cog(ErrorHandler(bot))
-    bot.add_cog(Logger(bot))
+async def setup(bot):
+    intents = discord.Intents.default()
+    intents.members = True
+    await bot.add_cog(ErrorHandler(bot, intents=intents))
+    await bot.add_cog(Logger(bot, intents=intents))

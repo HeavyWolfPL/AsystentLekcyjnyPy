@@ -1,4 +1,4 @@
-import json, re, logging
+import discord, json, re, logging
 from discord.ext import commands
 from vulcan import Vulcan, Account, Keystore
 from cogs.dziennik.dziennik_setup import DziennikSetup
@@ -40,5 +40,7 @@ class Numerek(commands.Cog):
         dziennik_log.debug("Numerek to: " + lucky_number)
         return f"Szczęśliwy Numerek: `{lucky_number}`"
 
-def setup(bot):
-    bot.add_cog(Numerek(bot))
+async def setup(bot):
+    intents = discord.Intents.default()
+    intents.members = True
+    await bot.add_cog(Numerek(bot, intents=intents))

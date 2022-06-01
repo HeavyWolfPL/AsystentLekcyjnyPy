@@ -121,56 +121,65 @@ class Frekwencja(commands.Cog):
         # link/url = 5
 
         @discord.ui.button(label="Poniedziałek", style=discord.ButtonStyle.blurple)
-        async def poniedzialek(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def poniedzialek(self, interaction: discord.Interaction, button: discord.ui.Button):
             dziennik_log.debug("Użytkownik wybrał frekwencję z poniedziałku.")
-            await interaction.response.send_message(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "poniedziałek", "day")}', ephemeral=True)
+            await interaction.response.defer()
+            await interaction.followup.send(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "poniedziałek", "day")}', ephemeral=True)
 
         @discord.ui.button(label="Wtorek", style=discord.ButtonStyle.blurple)
-        async def wtorek(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def wtorek(self, interaction: discord.Interaction, button: discord.ui.Button):
             dziennik_log.debug("Użytkownik wybrał frekwencję z wtorku.")
-            await interaction.response.send_message(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "wtorek", "day")}', ephemeral=True)
+            await interaction.response.defer()
+            await interaction.followup.send(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "wtorek", "day")}', ephemeral=True)
 
         @discord.ui.button(label="Środa", style=discord.ButtonStyle.blurple)
-        async def sroda(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def sroda(self, interaction: discord.Interaction, button: discord.ui.Button):
             dziennik_log.debug("Użytkownik wybrał frekwencję ze środy.")
-            await interaction.response.send_message(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "środa", "day")}', ephemeral=True)
+            await interaction.response.defer()
+            await interaction.followup.send(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "środa", "day")}', ephemeral=True)
 
         @discord.ui.button(label="Czwartek", style=discord.ButtonStyle.blurple)
-        async def czwartek(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def czwartek(self, interaction: discord.Interaction, button: discord.ui.Button):
             dziennik_log.debug("Użytkownik wybrał frekwencję z czwartku.")
-            await interaction.response.send_message(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "czwartek", "day")}', ephemeral=True)
+            await interaction.response.defer()
+            await interaction.followup.send(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "czwartek", "day")}', ephemeral=True)
 
         @discord.ui.button(label="Piątek", style=discord.ButtonStyle.blurple)
-        async def piatek(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def piatek(self, interaction: discord.Interaction, button: discord.ui.Button):
             dziennik_log.debug("Użytkownik wybrał frekwencję z piątku.")
-            await interaction.response.send_message(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "piątek", "day")}', ephemeral=True)
+            await interaction.response.defer()
+            await interaction.followup.send(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "piątek", "day")}', ephemeral=True)
 
         @discord.ui.button(label="Wczoraj", style=discord.ButtonStyle.gray)
-        async def wczoraj(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def wczoraj(self, interaction: discord.Interaction, button: discord.ui.Button):
             dziennik_log.debug("Użytkownik wybrał frekwencję z wczoraj.")
-            await interaction.response.send_message(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "wczoraj", "day")}', ephemeral=True)
+            await interaction.response.defer()
+            await interaction.followup.send(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "wczoraj", "day")}', ephemeral=True)
 
         @discord.ui.button(label="Dzisiaj", style=discord.ButtonStyle.gray)
-        async def dzisiaj(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def dzisiaj(self, interaction: discord.Interaction, button: discord.ui.Button):
             dziennik_log.debug("Użytkownik wybrał frekwencję z dzisiaj.")
-            await interaction.response.send_message(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "dzisiaj", "day")}', ephemeral=True)
+            await interaction.response.defer()
+            await interaction.followup.send(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "dzisiaj", "day")}', ephemeral=True)
 
         @discord.ui.button(label="Obecny Tydz.", style=discord.ButtonStyle.gray)
-        async def obecny(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def obecny(self, interaction: discord.Interaction, button: discord.ui.Button):
             dziennik_log.debug("Użytkownik wybrał frekwencję z obecnego tygodnia.")
-            await interaction.response.send_message(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "obecny", "week")}', ephemeral=True)
+            await interaction.response.defer()
+            await interaction.followup.send(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "obecny", "week")}', ephemeral=True)
         
         @discord.ui.button(label="Poprzedni Tydz.", style=discord.ButtonStyle.gray)
-        async def poprzedni(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def poprzedni(self, interaction: discord.Interaction, button: discord.ui.Button):
             dziennik_log.debug("Użytkownik wybrał frekwencję z poprzedniego tygodnia.")
-            await interaction.response.send_message(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "poprzedni", "week")}', ephemeral=True)
+            await interaction.response.defer()
+            await interaction.followup.send(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, "poprzedni", "week")}', ephemeral=True)
                 
         @discord.ui.button(label="Usuń", style=discord.ButtonStyle.red)
-        async def delete(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def delete(self, interaction: discord.Interaction, button: discord.ui.Button):
             if self.ctx.author == interaction.user:
                 await interaction.message.delete()
             else:
-                await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
+                await interaction.followup.send('Brak uprawnień!', ephemeral=True)
 
     class Frekwencja_RODO_Button(discord.ui.View):
         def __init__(self, ctx, date, mode):
@@ -180,29 +189,31 @@ class Frekwencja(commands.Cog):
             self.mode = mode
 
         @discord.ui.button(label="Tak", style=discord.ButtonStyle.green)
-        async def tak(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def tak(self, interaction: discord.Interaction, button: discord.ui.Button):
             if self.ctx.author == interaction.user:
+                await interaction.response.defer()
                 await interaction.message.delete()
                 dziennik_log.debug("Użytkownik {}#{} ({}) wybrał Frekwencję w trybie RODO.".format(interaction.user.name, interaction.user.discriminator, interaction.user.id))
-                await interaction.response.send_message(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, self.date, self.mode)}', ephemeral=True)
+                await interaction.followup.send(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, self.date, self.mode)}', ephemeral=True)
             else:
-                await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
+                await interaction.followup.send('Brak uprawnień!', ephemeral=True)
             
 
         @discord.ui.button(label="Nie", style=discord.ButtonStyle.gray)
-        async def nie(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def nie(self, interaction: discord.Interaction, button: discord.ui.Button):
             if self.ctx.author == interaction.user:
+                await interaction.response.defer()
                 dziennik_log.debug("Użytkownik {}#{} ({}) wybrał Frekwencję w trybie Publicznym.".format(interaction.user.name, interaction.user.discriminator, interaction.user.id))
-                await interaction.response.send_message(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, self.date, self.mode)}', ephemeral=False)
+                await interaction.followup.send(f'{await Frekwencja.get_frekwencja(Frekwencja, interaction.user.id, self.date, self.mode)}', ephemeral=False)
             else:
-                await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
+                await interaction.followup.send('Brak uprawnień!', ephemeral=True)
         
         @discord.ui.button(label="Anuluj", style=discord.ButtonStyle.red)
-        async def delete(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def delete(self, interaction: discord.Interaction, button: discord.ui.Button):
             if self.ctx.author == interaction.user:
                 await interaction.message.delete()
             else:
-                await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
+                await interaction.followup.send('Brak uprawnień!', ephemeral=True)
 
     async def get_frekwencja(self, id, date, mode):
         if mode == "day":
@@ -403,5 +414,7 @@ class Frekwencja(commands.Cog):
             # # tabela = tabulate(tabela, headers, tablefmt="orgtbl", stralign="center")
             # return tabela
 
-def setup(bot):
-    bot.add_cog(Frekwencja(bot))
+async def setup(bot):
+    intents = discord.Intents.default()
+    intents.members = True
+    await bot.add_cog(Frekwencja(bot, intents=intents))

@@ -163,7 +163,7 @@ Poniżej znajdziesz listę komend. Jeśli potrzebujesz, możesz uzyskać informa
             self.ctx = ctx
         
         @discord.ui.button(label="Usuń", style=discord.ButtonStyle.red)
-        async def delete(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def delete(self, interaction: discord.Interaction, button: discord.ui.Button):
             if self.ctx.author == interaction.user:
                 await self.ctx.message.delete()
                 await interaction.message.delete()
@@ -176,7 +176,7 @@ Poniżej znajdziesz listę komend. Jeśli potrzebujesz, możesz uzyskać informa
             self.ctx = ctx
 
         @discord.ui.button(label="Tak", style=discord.ButtonStyle.green)
-        async def tak(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def tak(self, interaction: discord.Interaction, button: discord.ui.Button):
             if self.ctx.author == interaction.user:
                 await interaction.message.delete()
                 await self.ctx.reply(f'{await BotInfo.show_main_page(BotInfo, self.ctx)}', ephemeral=False)
@@ -184,12 +184,14 @@ Poniżej znajdziesz listę komend. Jeśli potrzebujesz, możesz uzyskać informa
                 await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
         
         @discord.ui.button(label="Nie", style=discord.ButtonStyle.red)
-        async def delete(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def delete(self, interaction: discord.Interaction, button: discord.ui.Button):
             if self.ctx.author == interaction.user:
                 await interaction.message.delete()
             else:
                 await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
 
 
-def setup(bot):
-    bot.add_cog(BotInfo(bot))
+async def setup(bot):
+    intents = discord.Intents.default()
+    intents.members = True
+    await bot.add_cog(BotInfo(bot, intents=intents))

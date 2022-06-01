@@ -101,21 +101,23 @@ class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
         # link/url = 5
 
         @discord.ui.button(label="Aktualny tydzień", style=discord.ButtonStyle.blurple)
-        async def aktualny(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def aktualny(self, interaction: discord.Interaction, button: discord.ui.Button):
+            await interaction.response.defer()
             dziennik_log.debug("Użytkownik {}#{} ({}) wybrał Sprawdziany i Kartkówki z aktualnego tygodnia.".format(interaction.user.name, interaction.user.discriminator, interaction.user.id))
-            await interaction.response.send_message(f'{await Sprawdziany.get_tests(Sprawdziany, interaction.user.id, "aktualny")}', ephemeral=True)
+            await interaction.followup.send(f'{await Sprawdziany.get_tests(Sprawdziany, interaction.user.id, "aktualny")}', ephemeral=True)
 
         @discord.ui.button(label="Przyszły tydzień", style=discord.ButtonStyle.blurple)
-        async def przyszly(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def przyszly(self, interaction: discord.Interaction, button: discord.ui.Button):
+            await interaction.response.defer()
             dziennik_log.debug("Użytkownik {}#{} ({}) wybrał Sprawdziany i Kartkówki z przyszłego tygodnia.".format(interaction.user.name, interaction.user.discriminator, interaction.user.id))
-            await interaction.response.send_message(f'{await Sprawdziany.get_tests(Sprawdziany, interaction.user.id, "przyszły")}', ephemeral=True)
+            await interaction.followup.send(f'{await Sprawdziany.get_tests(Sprawdziany, interaction.user.id, "przyszły")}', ephemeral=True)
         
         @discord.ui.button(label="Anuluj", style=discord.ButtonStyle.red)
-        async def delete(self, button: discord.ui.Button, interaction: discord.Interaction):
+        async def delete(self, interaction: discord.Interaction, button: discord.ui.Button):
             if self.ctx.author == interaction.user:
                 await interaction.message.delete()
             else:
-                await interaction.response.send_message('Brak uprawnień!', ephemeral=True)
+                await interaction.followup.send('Brak uprawnień!', ephemeral=True)
 
     
     async def get_tests(self, id, date):
@@ -211,6 +213,8 @@ class Sprawdziany(commands.Cog, name='Kartkówki i Sprawdziany'):
         dziennik_log.debug(f"Wyświetlono sprawdziany i kartkówki z {first_day}-{last_day}.")
         return f"Sprawdziany oraz Kartkówki: \n```{tabela}```"
 
-def setup(bot):
-    bot.add_cog(Sprawdziany(bot))
+async def setup(bot):
+    intents = discord.Intents.default()
+    intents.members = True
+    await bot.add_cog(Sprawdziany(bot, intents=intents))
     
