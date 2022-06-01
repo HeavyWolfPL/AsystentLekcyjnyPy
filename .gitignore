@@ -1,10 +1,15 @@
+# Configs n Data
+db/
+logs/
 token.json
 config.json
 key-config.json
 acc-config.json
-.data/
+
+# VS Code
 .vs/
 .vscode/
+
+# Python
+.venv/
 **/__pycache__/
-db/
-logs/
