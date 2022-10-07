@@ -11,33 +11,33 @@ Bot łączący się z API dziennika Vulcan UONET+ uzyskując w ten sposób róż
 - Pozostałe pakiety
 <details>
 <summary>Pakiety</summary>
-aenum==3.1.11
-aiodns==3.0.0
-aiohttp==3.8.1
-aiosignal==1.2.0
-async-timeout==4.0.2
-attrs==21.4.0
-cchardet==2.1.7
-cffi==1.15.0
-charset-normalizer==2.0.12
-cryptography==37.0.2
-discord.py @ git+https://github.com/Rapptz/discord.py@348764583d95265f40b8a683e2f8ac73d6c173f5
-frozenlist==1.3.0
-future==0.18.2
-idna==3.3
-multidict==6.0.2
-pycares==4.1.2
-pycparser==2.21
-pyOpenSSL==22.0.0
-python-dateutil==2.8.2
-pytz==2022.1
-PyYAML==6.0
-related==0.7.2
-six==1.16.0
-tabulate==0.8.9
-uonet-request-signer-hebe==0.1.1
-vulcan-api==2.1.1
-yarl==1.7.2
+<br>aenum==3.1.11
+<br>aiodns==3.0.0
+<br>aiohttp==3.8.1
+<br>aiosignal==1.2.0
+<br>async-timeout==4.0.2
+<br>attrs==21.4.0
+<br>cchardet==2.1.7
+<br>cffi==1.15.0
+<br>charset-normalizer==2.0.12
+<br>cryptography==37.0.2
+<br>discord.py @ git+https://github.com/Rapptz/discord.py@348764583d95265f40b8a683e2f8ac73d6c173f5
+<br>frozenlist==1.3.0
+<br>future==0.18.2
+<br>idna==3.3
+<br>multidict==6.0.2
+<br>pycares==4.1.2
+<br>pycparser==2.21
+<br>pyOpenSSL==22.0.0
+<br>python-dateutil==2.8.2
+<br>pytz==2022.1
+<br>PyYAML==6.0
+<br>related==0.7.2
+<br>six==1.16.0
+<br>tabulate==0.8.9
+<br>uonet-request-signer-hebe==0.1.1
+<br>vulcan-api==2.1.1
+<br>yarl==1.7.2
 </details>
 
 ### **Tokeny**
